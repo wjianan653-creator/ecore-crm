@@ -766,7 +766,7 @@
         <div class="form-grid">
           <div class="field"><label>客户 *</label><select name="clientId" required><option value="">请选择</option>${clientOptions(modal.clientId)}</select></div>
           <div class="field"><label>渠道</label><select name="channel"><option>Email</option><option>WhatsApp</option><option>LinkedIn</option><option>电话</option><option>官网表单</option><option>其他</option></select></div>
-          <div class="field"><label>沟通类型</label><select name="activityType"><option>首次触达</option><option>二次跟进</option><option>三次跟进</option><option>四次跟进</option><option>客户回复</option><option>报价沟通</option><option>电话沟通</option></select></div>
+          <div class="field"><label>沟通类型</label><select name="activityType"><option>首次触达</option><option>二次跟进</option><option>三次跟进</option><option>四次跟进</option><option>客户回复</option><option>已发送报价</option><option>对方提出采购需求</option><option>对方提出销售库存</option><option>电话沟通</option></select></div>
           <div class="field wide"><label>本次结果 / 业务机会（可多选）</label>${progressSelector(currentClient?.progressTags || [])}</div>
           <div class="field wide"><label>本次沟通摘要 *</label><textarea name="summary" required></textarea></div>
           <div class="field"><label>下次跟进时间</label><input name="nextDueAt" type="datetime-local" value="${localInput(3, 10)}" /></div>
@@ -885,6 +885,9 @@
     const f = Object.fromEntries(new FormData(event.currentTarget));
     const channelKey = f.channel === "LinkedIn" ? "linkedin" : f.channel === "WhatsApp" ? "whatsapp" : f.channel === "Email" ? "email" : "";
     if (channelKey) selectedTags.push(`${channelKey}_${f.activityType === "客户回复" ? "replied" : "pending"}`);
+    if (f.activityType === "已发送报价") selectedTags.push("quote_sent");
+    if (f.activityType === "对方提出采购需求") selectedTags.push("customer_buying");
+    if (f.activityType === "对方提出销售库存") selectedTags.push("customer_selling");
     const clientId = Number(f.clientId);
     const next = f.nextDueAt ? new Date(f.nextDueAt).toISOString() : "";
     const now = new Date().toISOString();
