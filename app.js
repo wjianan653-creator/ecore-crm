@@ -35,6 +35,50 @@
   const directions = ["Buy-from", "Sell-to", "Two-way"];
   const accountTypes = ["SI", "Server Builder", "HPC / AI Infrastructure", "Distributor", "VAR", "Cloud / Hosting", "Data Center", "OEM / ODM", "Repair / Lifecycle", "General Trader", "Other"];
   const oldStatusMap = { 新线索: "待筛选", 已触达: "已建立联系", 已回复: "已建立联系", 报价中: "商务评估", 谈判中: "商务评估", 已成交: "已成交", 暂缓: "培育", 无效: "已关闭" };
+  const RESEARCH_BATCH = "2026-08-13-amd-hpc-40";
+  const AMD_EPYC_DIRECTORY = "https://www.amd.com/en/where-to-buy/processors/epyc/sys-integrators.html";
+  const researchAccountSeed = [
+    { company: "Abacus Electric", website: "https://www.abacus.cz/", country: "Czech Republic", accountGrade: "A", accountType: "Server Builder", focus: true, direction: "Buy-from", evidence: "官网明确生产 white-box 服务器与存储，并经营服务器部件、内存和 SSD；AMD EPYC 官方方案商。", hypothesis: "有服务器组装、现货与项目订单，最可能出现 BOM 变更、订单未交付或全新部件余量。" },
+    { company: "Advanced Clustering Technologies", website: "https://www.advancedclustering.com/", country: "United States", accountGrade: "A", accountType: "HPC / AI Infrastructure", focus: true, evidence: "官网专注 HPC/AI 集群、服务器与工作站；AMD EPYC 官方方案商。", hypothesis: "集群项目使用大量 RDIMM 与企业级 NVMe，适合询问项目取消、扩容余料和 spare stock。" },
+    { company: "Advanced HPC", website: "https://www.advancedhpc.com/", country: "United States", accountGrade: "A", accountType: "HPC / AI Infrastructure", focus: true, evidence: "官网可配置 Supermicro EPYC GPU 服务器，明确列出 DDR4/DDR5 RDIMM 与 NVMe；AMD EPYC 官方方案商。", hypothesis: "直接配置 Supermicro HPC 服务器，部件匹配度高，优先找采购、供应链或库存负责人。" },
+    { company: "ASA Computers", website: "https://www.asacomputers.com/", country: "United States", accountGrade: "A", accountType: "Server Builder", focus: true, direction: "Buy-from", email: "sales@asacomputers.com", evidence: "官网销售 Supermicro GPU/EPYC 服务器，并设有 CPU、Memory、SSD clearance；AMD EPYC 官方方案商。", hypothesis: "同时具备系统集成与 clearance 库存入口，是 Ecore 最优先的潜在库存供应方之一。" },
+    { company: "Aspen Systems", website: "https://www.aspsys.com/", country: "United States", accountGrade: "A", accountType: "HPC / AI Infrastructure", focus: true, evidence: "官网定位定制 HPC 集群、AI 硬件与服务器；AMD EPYC 官方方案商。", hypothesis: "定制项目会形成配置变更、备用件和交付余量，适合采购优先触达。" },
+    { company: "Atipa Technologies", website: "https://www.atipa.com/", country: "United States", accountGrade: "A", accountType: "HPC / AI Infrastructure", focus: true, email: "sales@atipa.com", evidence: "官网设计和交付 HPC、AI 与数据基础设施，服务器配置包含 DDR5 与 NVMe；AMD EPYC 官方方案商。", hypothesis: "定制服务器/集群的 RDIMM 与企业 SSD 用量大，优先询问 cancelled project 和 released inventory。" },
+    { company: "Broadberry Data Systems", website: "https://www.broadberry.com/", country: "United Kingdom", accountGrade: "A", accountType: "Server Builder", focus: true, evidence: "官网提供可配置 Supermicro EPYC GPU、HPC 与存储服务器，明确列出 DDR5 RDIMM/NVMe；AMD EPYC 官方方案商。", hypothesis: "服务器配置器和多平台库存使其具备部件余量与型号切换机会。" },
+    { company: "DIAWAY", website: "https://diaway.com/", country: "Estonia", accountGrade: "A", accountType: "HPC / AI Infrastructure", focus: true, email: "contact@diaway.com", evidence: "官网提供 EPYC HCI、全 NVMe 与存储服务器，配置使用 WD Ultrastar NVMe 和 RDIMM；AMD EPYC 官方方案商。", hypothesis: "波罗的海区域中型集成商，产品与 Ecore 采购品类直接重合，区域竞争相对较低。" },
+    { company: "M Computers", website: "https://mcomputers.cz/", country: "Czech Republic", accountGrade: "A", accountType: "HPC / AI Infrastructure", focus: true, email: "info@mcomputers.cz", evidence: "官网有 Supermicro/EPYC 服务器、AI 超算项目，并明确测试 Kingston 内存与企业 SSD；AMD EPYC 官方方案商。", hypothesis: "项目型 HPC 集成与硬件测试会形成备件、替换料和项目余量，适合本地语言触达。" },
+    { company: "Nor-Tech", website: "https://nor-tech.com/", country: "United States", accountGrade: "A", accountType: "HPC / AI Infrastructure", focus: true, evidence: "官网明确列出 Supermicro 与 AMD 合作，提供 HPC 集群、AI 服务器、全闪和并行存储；AMD EPYC 官方方案商。", hypothesis: "系统集成、升级和回收服务并存，既可能释放库存也可能有紧急缺料。" },
+    { company: "ServerDirect", website: "https://www.serverdirect.nl/", country: "Netherlands", accountGrade: "A", accountType: "Server Builder", focus: true, direction: "Buy-from", evidence: "官网标注 Supermicro Direct Partner，单独销售 DDR5 RDIMM、Solidigm 企业 SSD并提供服务器/存储集成；AMD EPYC 官方方案商。", hypothesis: "可见部件级目录和价格，库存透明度较高，优先询问现货、released stock 与批量折扣。" },
+    { company: "Thinkmate", website: "https://www.thinkmate.com/", country: "United States", accountGrade: "A", accountType: "Server Builder", focus: true, evidence: "官网拥有完整 Supermicro 服务器、存储、GPU/HPC 配置器；原 AMD 目录成员 Silicon Mechanics 已并入 Thinkmate。", hypothesis: "Supermicro 系统配置量大，存在 RDIMM/NVMe 配置替换和库存释放机会，但需精准找供应链角色。" },
+    { company: "International Computer Concepts", website: "https://www.icc-usa.com/", country: "United States", accountGrade: "A", accountType: "HPC / AI Infrastructure", evidence: "官网专注 AI/HPC 解决方案和定制基础设施；AMD EPYC 官方方案商。", hypothesis: "定制 AI/HPC 项目部件密度高，可双向开发项目余料与紧急缺料。" },
+    { company: "EchoStreams Innovative Solutions", website: "https://echostreams.com/", country: "United States", accountGrade: "A", accountType: "Server Builder", evidence: "官网提供服务器、存储与高密度平台；AMD EPYC 官方方案商。", hypothesis: "服务器和存储平台制造/集成属性强，优先确认是否自持内存和企业 SSD 库存。" },
+    { company: "RAID Media Systems", website: "https://www.raidmedia.com/", country: "Germany", accountGrade: "A", accountType: "Server Builder", evidence: "官网专注存储、服务器和媒体工作流系统；AMD EPYC 官方方案商。", hypothesis: "存储项目与企业 SSD 高度匹配，适合询问项目 surplus、spares 和 discontinued configuration。" },
+    { company: "2CRSi", website: "https://www.2crsi.com/", country: "France", accountGrade: "B", accountType: "Server Builder", evidence: "官网设计制造高性能节能服务器，覆盖 AI、Cloud、HPC 与数据中心；AMD EPYC 官方方案商。", hypothesis: "直接制造服务器，部件需求真实，但公司体量和正式采购流程较大，作为第二梯队精准开发。" },
+    { company: "Ace Computers", website: "https://acecomputers.com/", country: "United States", accountGrade: "B", accountType: "Server Builder", evidence: "官网提供 AI 服务器、通用 HPC、存储和工作站；AMD EPYC 官方方案商。", hypothesis: "系统制造能力强，但政府/军工占比较高且美国敏感度较高，需回避敏感用途并低频开发。" },
+    { company: "AMAX Engineering", website: "https://www.amax.com/", country: "United States", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "官网提供 AI/HPC、数据中心与定制服务器工程；AMD EPYC 官方方案商。", hypothesis: "部件消耗量大但组织较成熟，优先找供应链/库存而非泛销售。" },
+    { company: "BIOS IT", website: "https://www.bios-it.co.uk/", country: "United Kingdom", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "官网聚焦 HPC、AI 和高性能服务器；AMD EPYC 官方方案商。", hypothesis: "英国 HPC 集成商，可能有项目余料，但需先核验当前采购实体与仓库所在地。" },
+    { company: "Boston Limited", website: "https://boston.co.uk/", country: "United Kingdom", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "官网提供服务器、存储、AI/HPC 和数据中心方案；AMD EPYC 官方方案商。", hypothesis: "产品高度匹配但集团规模偏大，适合作为稳定长期账户而非追求快速回复。" },
+    { company: "CARRI Systems", website: "https://www.carri.com/", country: "France", accountGrade: "B", accountType: "Server Builder", evidence: "官网为法国 AI 服务器、工作站和集群制造集成商；AMD EPYC 官方方案商。", hypothesis: "本地化法语触达采购或运营负责人，重点问 cancelled project 和 extra units。" },
+    { company: "CIARA", website: "https://ciaratech.com/", country: "Canada", accountGrade: "B", accountType: "Server Builder", evidence: "官网提供服务器、工作站、HPC 与 OEM 方案；AMD EPYC 官方方案商。", hypothesis: "OEM/项目配置会产生替换物料，但北美开发成本较高，列入第二梯队。" },
+    { company: "Colfax International", website: "https://www.colfax-intl.com/", country: "United States", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "官网专注 HPC 与 AI 服务器、集群和工作站；AMD EPYC 官方方案商。", hypothesis: "定制配置与研究客户较多，适合项目余料和紧急缺料双向开发。" },
+    { company: "DALCO", website: "https://www.dalco.ch/", country: "Switzerland", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "官网提供高性能计算、服务器和专业系统；AMD EPYC 官方方案商。", hypothesis: "瑞士中型技术公司，可信度高但库存释放概率需通过采购/运营角色验证。" },
+    { company: "DELTA Computer Products", website: "https://www.deltacomputer.com/", country: "Germany", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "官网覆盖 HPC、AI、服务器、存储和 GPU 基础设施；AMD EPYC 官方方案商。", hypothesis: "技术匹配度高，德语触达供应链或产品负责人；避免只联系整机销售。" },
+    { company: "Exxact", website: "https://www.exxactcorp.com/", country: "United States", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "官网提供 Deep Learning、HPC、服务器与分销业务；AMD EPYC 官方方案商。", hypothesis: "供应链和库存体量可观，但美国渠道竞争高，作为精准而非大批量开发对象。" },
+    { company: "FORMAT", website: "https://www.format.com.pl/", country: "Poland", accountGrade: "B", accountType: "SI", evidence: "官网提供服务器、IT 基础设施与集成服务；AMD EPYC 官方方案商。", hypothesis: "东欧区域适合本地化触达，先确认是否自行配置服务器和持有 RDIMM/SSD。" },
+    { company: "Images & Technology", website: "https://www.imagespc.com/", country: "Canada", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "官网提供 HPC、AI、服务器与专业计算方案；AMD EPYC 官方方案商。", hypothesis: "项目型客户可能有 surplus/spares，优先找采购或技术销售负责人。" },
+    { company: "KOI Computers", website: "https://www.koicomputers.com/", country: "United States", accountGrade: "B", accountType: "Server Builder", email: "sales@koicomputers.com", evidence: "AMD EPYC 与 NVIDIA Certified Systems 官方目录均可验证，官网提供定制 HPC 集群、服务器和存储。", hypothesis: "可信度较高且公司规模适中，但政府项目较多；以商业、教育或研究项目余料切入并回避敏感用途。" },
+    { company: "MEGWARE", website: "https://www.megware.com/", country: "Germany", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "官网专注 HPC 系统与集群解决方案；AMD EPYC 官方方案商。", hypothesis: "大型 HPC 项目存在部件余量，但采购流程偏专业，需用德语和具体 PN 切入。" },
+    { company: "Microway", website: "https://www.microway.com/", country: "United States", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "官网长期提供 HPC、AI、GPU 服务器和集群；AMD EPYC 官方方案商。", hypothesis: "产品匹配但美国响应与合规成本较高，第二梯队低频精准开发。" },
+    { company: "Network Allies", website: "https://www.networkallies.com/", country: "United States", accountGrade: "B", accountType: "Server Builder", evidence: "AMD EPYC 官方方案商目录列名；官网需进一步核验当前服务器/存储产品线。", hypothesis: "先确认仍自有集成与库存能力，再问 spare stock，不直接发送长模板。" },
+    { company: "PSSC Labs", website: "https://pssclabs.com/", country: "United States", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "官网提供 on-prem AI、HPC、Big Data 集群与定制服务器；AMD EPYC 官方方案商。", hypothesis: "政府/研究项目多，部件需求强但敏感性较高，话术聚焦教育、科研和商业项目。" },
+    { company: "Puget Systems", website: "https://puget.systems/", country: "United States", accountGrade: "B", accountType: "Server Builder", evidence: "AMD EPYC 官方方案商目录列名，官网提供专业工作站和服务器。", hypothesis: "定制工作站/服务器有换料可能，但企业 RDIMM/SSD 占比需先核验。" },
+    { company: "Racklive", website: "https://racklive.com/", country: "United States", accountGrade: "B", accountType: "Data Center", evidence: "AMD EPYC 官方方案商目录列名，定位数据中心与机架基础设施。", hypothesis: "可能有规模化服务器项目和 spare inventory；先确认采购实体与项目类型。" },
+    { company: "SCAN Computers", website: "https://www.scan.co.uk/", country: "United Kingdom", accountGrade: "B", accountType: "Server Builder", evidence: "官网提供组件、服务器、3XS 系统与 HPC；AMD EPYC 官方方案商。", hypothesis: "库存和产品广但规模较大，价格竞争强；适合明确 PN/数量的机会型开发。" },
+    { company: "TAROX", website: "https://www.tarox.de/", country: "Germany", accountGrade: "B", accountType: "Server Builder", evidence: "官网提供德国本地 IT、服务器与基础设施方案；AMD EPYC 官方方案商。", hypothesis: "制造与渠道兼具，可能有 released stock，但应定位产品管理或采购而非泛销售。" },
+    { company: "Thomas-Krenn", website: "https://www.thomas-krenn.com/", country: "Germany", accountGrade: "B", accountType: "Server Builder", evidence: "官网提供可配置企业服务器与存储；AMD EPYC 官方方案商。", hypothesis: "可信度高、产品匹配，但体量较大且库存管理成熟，作为中长期账户。" },
+    { company: "WORTMANN", website: "https://www.wortmann.de/", country: "Germany", accountGrade: "B", accountType: "OEM / ODM", evidence: "官网为德国 TERRA IT 制造与渠道公司；AMD EPYC 官方方案商。", hypothesis: "制造端可能有物料释放，但公司较大，需找供应链/产品管理的准确入口。" },
+    { company: "Penguin Solutions", website: "https://www.penguinsolutions.com/en-us", country: "United States", accountGrade: "B", accountType: "HPC / AI Infrastructure", evidence: "原 Penguin Computing，官网提供大规模 AI 数据中心基础设施；AMD EPYC 官方方案商目录列名。", hypothesis: "规模偏大且项目复杂，保留为高质量长期账户，不进入本周首触达优先队列。" },
+  ];
 
   function uid() {
     return Date.now() * 1000 + Math.floor(Math.random() * 1000);
@@ -93,8 +137,90 @@
   function directionLabel(direction) {
     return ({ "Buy-from": "向对方采购", "Sell-to": "向对方销售", "Two-way": "双向账户" })[direction] || direction || "待判断";
   }
+  function researchAccounts() {
+    const now = new Date().toISOString();
+    return researchAccountSeed.map((item, index) => {
+      const dueGroup = item.focus ? Math.floor(researchAccountSeed.filter((candidate, candidateIndex) => candidate.focus && candidateIndex < index).length / 4) : 5 + (index % 4);
+      const nextFollowUpAt = isoOffset(dueGroup, 10 + (index % 4), index % 2 ? 30 : 0);
+      return {
+        id: 6801 + index,
+        company: item.company,
+        website: item.website,
+        country: item.country,
+        businessRole: item.direction === "Buy-from" ? "供应商" : "双向合作",
+        products: "DDR4/DDR5 ECC RDIMM, Enterprise NVMe/SATA SSD, Server barebone/components",
+        source: "AMD EPYC 官方方案商目录 / 公司官网",
+        contactName: "",
+        jobTitle: "",
+        email: item.email || "",
+        whatsapp: "",
+        linkedin: "",
+        status: "已确认账户",
+        trustScore: item.accountGrade === "A" ? 90 : 82,
+        followUpStage: "联系人研究",
+        lastTouchAt: "",
+        nextFollowUpAt,
+        nextAction: item.accountGrade === "A"
+          ? "定位 Purchasing / Supply Chain / Inventory 负责人；询问项目取消、BOM 变更或全新未使用 RDIMM/SSD 余料"
+          : "定位采购或产品负责人；先确认是否自持库存，再询问项目余料、spare stock 或 released inventory",
+        notes: `2026-08-13 筛选批次；尚未触达。${item.hypothesis}`,
+        accountGrade: item.accountGrade,
+        direction: item.direction || "Two-way",
+        accountType: item.accountType,
+        commercialHypothesis: item.hypothesis,
+        verifiedEvidence: `大厂目录：${AMD_EPYC_DIRECTORY}；官网核验：${item.evidence}`,
+        owner: "Jenna",
+        researchBatch: RESEARCH_BATCH,
+        focus: Boolean(item.focus),
+        createdAt: now,
+        updatedAt: now,
+      };
+    });
+  }
+  function mergeResearchBatch(payload) {
+    const leads = researchAccounts();
+    const cleanUrl = (value = "") => String(value).toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
+    const cleanName = (value = "") => String(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+    const existingByUrl = new Map(payload.clients.map((client) => [cleanUrl(client.website), client]));
+    const existingByName = new Map(payload.clients.map((client) => [cleanName(client.company), client]));
+    const newlyAdded = [];
+
+    leads.forEach((lead) => {
+      const existing = existingByUrl.get(cleanUrl(lead.website)) || existingByName.get(cleanName(lead.company));
+      if (existing) {
+        if (!existing.verifiedEvidence || existing.verifiedEvidence.startsWith("待补充")) existing.verifiedEvidence = lead.verifiedEvidence;
+        if (!existing.commercialHypothesis) existing.commercialHypothesis = lead.commercialHypothesis;
+        if (!existing.accountType || existing.accountType === "Other") existing.accountType = lead.accountType;
+        if (!existing.products) existing.products = lead.products;
+        if (!existing.source) existing.source = lead.source;
+        return;
+      }
+      payload.clients.push(lead);
+      existingByUrl.set(cleanUrl(lead.website), lead);
+      existingByName.set(cleanName(lead.company), lead);
+      newlyAdded.push(lead);
+    });
+
+    const existingTaskClients = new Set((payload.tasks || []).filter((task) => task.researchBatch === RESEARCH_BATCH).map((task) => Number(task.clientId)));
+    leads.filter((lead) => lead.focus).forEach((lead, index) => {
+      const account = payload.clients.find((client) => cleanUrl(client.website) === cleanUrl(lead.website));
+      if (!account || existingTaskClients.has(Number(account.id))) return;
+      payload.tasks.push({
+        id: 7801 + index,
+        clientId: account.id,
+        title: "找到采购/供应链负责人并完成首次触达",
+        dueAt: account.nextFollowUpAt || lead.nextFollowUpAt,
+        priority: "高",
+        stage: "联系人研究",
+        completed: false,
+        researchBatch: RESEARCH_BATCH,
+      });
+    });
+    payload.importedResearchBatches = Array.from(new Set([...(payload.importedResearchBatches || []), RESEARCH_BATCH]));
+    return newlyAdded.length;
+  }
   function normalizeData(payload) {
-    payload.version = 2;
+    payload.version = 3;
     payload.clients = (payload.clients || []).map((c) => ({
       ...c,
       status: oldStatusMap[c.status] || c.status || "待筛选",
@@ -120,6 +246,7 @@
       targetPrice: q.targetPrice || "",
       internalOwner: q.internalOwner || "Jenna",
     }));
+    mergeResearchBatch(payload);
     return payload;
   }
 
@@ -133,7 +260,7 @@
       { id: 105, company: "Wiwynn", website: "https://www.wiwynn.com", country: "Taiwan", businessRole: "潜在买家", products: "AI Server, Cloud Infrastructure, Rack Solutions", source: "官网 / LinkedIn", contactName: "", jobTitle: "", email: "", whatsapp: "", linkedin: "", status: "新线索", trustScore: 95, followUpStage: "联系人研究", lastTouchAt: "", nextFollowUpAt: isoOffset(3, 15), nextAction: "定位供应链、供应商注册或项目剩余库存合作联系人", notes: "大型云基础设施公司，匹配度高，触达应更精准。", createdAt: isoOffset(-2), updatedAt: now },
     ];
     return {
-      version: 2,
+      version: 3,
       clients: clients.map((c) => ({
         ...c,
         status: oldStatusMap[c.status] || c.status,
@@ -246,6 +373,7 @@
         const record = JSON.parse(localStorage.getItem(STORAGE_KEY));
         cryptoKey = await deriveKey(password, base64ToBytes(record.salt));
         data = normalizeData(await decryptPayload(record, cryptoKey));
+        await saveData();
       }
       sessionStorage.setItem(SESSION_KEY, password);
       render();
@@ -696,6 +824,7 @@
       const parsed = JSON.parse(record);
       cryptoKey = await deriveKey(sessionPassword, base64ToBytes(parsed.salt));
       data = normalizeData(await decryptPayload(parsed, cryptoKey));
+      await saveData();
       render();
     } catch {
       sessionStorage.removeItem(SESSION_KEY);
