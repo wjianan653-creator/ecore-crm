@@ -193,14 +193,60 @@ td { padding: 16px 15px; border-top: 1px solid #eceae6; color: var(--text); font
 td strong { color: var(--navy); font-size: 13px; }
 tr.clickable { cursor: pointer; }
 tr.clickable:hover td { background: #f8fbff; }
+.progress-legend {
+  display: flex; flex-wrap: wrap; gap: 9px 18px; margin: -10px 0 16px;
+  padding: 11px 14px; border: 1px solid #e6e1dc; border-radius: 10px; background: rgba(255,255,255,.72);
+  color: #68758a; font-size: 10px;
+}
+.progress-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.progress-legend i { width: 14px; height: 14px; border: 1px solid rgba(88,59,68,.08); border-radius: 4px; }
+.legend-contact { background: #f3f4f6; }
+.legend-outreach { background: #fff2b8; }
+.legend-reply { background: #ffdce8; }
+.legend-opportunity { background: #ffb9b9; }
+.account-table table { min-width: 1450px; }
+.account-table tr.account-progress-contact td { background: #f7f7f5; }
+.account-table tr.account-progress-outreach td { background: #fff8d7; }
+.account-table tr.account-progress-reply td { background: #ffe5ed; }
+.account-table tr.account-progress-opportunity td { background: #ffd5d5; }
+.account-table tr.account-progress-contact:hover td { background: #f0f0ed; }
+.account-table tr.account-progress-outreach:hover td { background: #fff0b5; }
+.account-table tr.account-progress-reply:hover td { background: #ffd4e1; }
+.account-table tr.account-progress-opportunity:hover td { background: #ffc2c2; }
+.account-table tr[class*="account-progress-"] td:first-child { border-left: 4px solid transparent; }
+.account-table tr.account-progress-contact td:first-child { border-left-color: #e0bb42; }
+.account-table tr.account-progress-outreach td:first-child { border-left-color: #e0b229; }
+.account-table tr.account-progress-reply td:first-child { border-left-color: #dd7899; }
+.account-table tr.account-progress-opportunity td:first-child { border-left-color: #df4545; }
 .company-cell { display: grid; gap: 4px; }
 .company-cell small { color: var(--muted); }
+.contact-cell { min-width: 160px; display: grid; gap: 4px; }
+.contact-cell small { color: var(--muted); }
+.contact-methods { display: flex; flex-wrap: wrap; gap: 4px; }
+.contact-methods i { padding: 3px 6px; border-radius: 5px; color: #5d5f6a; background: rgba(255,255,255,.72); font-size: 8px; font-style: normal; font-weight: 750; }
+.contact-methods em, .no-activity { color: #929bac; font-size: 9px; font-style: normal; }
+.activity-preview { width: 225px; display: grid; gap: 5px; }
+.activity-preview > div { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.activity-preview b { color: #243a61; font-size: 9px; }
+.activity-preview time { color: #8995a8; font-size: 8px; white-space: nowrap; }
+.activity-preview p { margin: 0; overflow: hidden; display: -webkit-box; color: #536078; font-size: 10px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.activity-preview > small { color: #8d98aa; font-size: 8px; }
+.next-action-cell { min-width: 220px; line-height: 1.55; }
+.progress-pills { min-width: 185px; display: flex; flex-wrap: wrap; gap: 5px; }
+.progress-pill { display: inline-flex; padding: 4px 7px; border-radius: 6px; font-size: 9px; font-weight: 760; line-height: 1.3; }
+.progress-pill.pending { color: #795906; background: #ffec9c; }
+.progress-pill.reply { color: #9c3659; background: #ffcddd; }
+.progress-pill.opportunity { color: #a51f2a; background: #ffadad; }
 .status, .trust {
   display: inline-flex; align-items: center; min-height: 25px; padding: 0 8px; border-radius: 99px;
   font-size: 10px; font-weight: 760; white-space: nowrap;
 }
 .status.gray { color: #647085; background: #eef0f3; }
 .status.blue { color: #1260d7; background: #eaf2ff; }
+.status.yellow { color: #815d0d; background: #fff0b7; }
+.status.pink { color: #a54567; background: #ffe1eb; }
+.status.rose { color: #9e2f59; background: #ffcadd; }
+.status.hotpink { color: #7b1644; background: #ef9dbc; }
 .status.cyan { color: #08768e; background: #e4f7fb; }
 .status.purple { color: #7651be; background: #f0eafd; }
 .status.orange { color: #ae621f; background: #fff1df; }
@@ -287,6 +333,8 @@ tr.clickable:hover td { background: #f8fbff; }
 .detail-card label { display: block; margin-bottom: 5px; color: #8b96a8; font-size: 9px; letter-spacing: .06em; }
 .detail-card p { margin: 0; color: var(--text); font-size: 12px; line-height: 1.55; word-break: break-word; }
 .detail-wide { grid-column: 1 / -1; }
+.drawer-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.drawer-badges .progress-pills { min-width: 0; }
 .drawer-section { margin-top: 24px; }
 .drawer-section h3 { margin: 0 0 12px; font-size: 15px; }
 .mini-list { display: grid; gap: 8px; }
@@ -310,6 +358,14 @@ tr.clickable:hover td { background: #f8fbff; }
   width: 100%; min-height: 42px; padding: 10px 11px; border: 1px solid #d7dee9; border-radius: 8px; outline: 0; color: var(--navy); background: white;
 }
 .field textarea { min-height: 80px; resize: vertical; }
+.progress-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.progress-group { min-width: 0; display: grid; gap: 7px; margin: 0; padding: 12px; border: 1px solid #e2e2de; border-radius: 9px; background: white; }
+.progress-group legend { padding: 0 5px; font-size: 9px; font-weight: 820; }
+.progress-group.pending { background: #fffbea; }
+.progress-group.reply { background: #fff1f5; }
+.progress-group.opportunity { background: #fff0f0; }
+.progress-group label { display: flex; align-items: flex-start; gap: 7px; color: #4e5b70; font-size: 10px; line-height: 1.4; cursor: pointer; }
+.progress-group input { width: 15px; height: 15px; min-height: 0; flex: 0 0 auto; margin: 0; accent-color: var(--blue); }
 .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23,104,242,.08); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
@@ -351,5 +407,6 @@ tr.clickable:hover td { background: #f8fbff; }
   .toolbar { align-items: stretch; flex-direction: column; }
   .toolbar input { min-width: 0; width: 100%; }
   .detail-grid, .form-grid { grid-template-columns: 1fr; }
+  .progress-selector { grid-template-columns: 1fr; }
   .detail-wide, .field.wide { grid-column: auto; }
 }
