@@ -29,12 +29,25 @@
     ["quotes", "◆", "库存核验"],
     ["report", "▥", "老板汇报"],
   ];
-  const statuses = ["待筛选", "已确认账户", "已找到联系人", "已建立联系", "需求/库存发现", "资料齐全", "商务评估", "核验中", "已成交", "培育", "已关闭"];
-  const statusTone = { 待筛选: "gray", 已确认账户: "blue", 已找到联系人: "cyan", 已建立联系: "blue", "需求/库存发现": "purple", 资料齐全: "cyan", 商务评估: "orange", 核验中: "orange", 已成交: "green", 培育: "gray", 已关闭: "red" };
+  const statuses = ["待筛选", "已确认目标（待找联系人）", "LinkedIn申请已发送（等待通过）", "邮件已发送（等待回复）", "WhatsApp已发送（等待回复）", "多渠道已触达（等待回复）", "客户已回复", "已向客户发送报价", "已收到供应报价", "已发现采购需求", "已确认库存机会", "资料核验中", "价格评估中", "商务谈判中", "已成交", "培育", "已关闭"];
+  const statusTone = { 待筛选: "gray", "已确认目标（待找联系人）": "gray", "LinkedIn申请已发送（等待通过）": "yellow", "邮件已发送（等待回复）": "yellow", "WhatsApp已发送（等待回复）": "yellow", "多渠道已触达（等待回复）": "yellow", 客户已回复: "pink", 已向客户发送报价: "red", 已收到供应报价: "red", 已发现采购需求: "red", 已确认库存机会: "red", 资料核验中: "orange", 价格评估中: "orange", 商务谈判中: "purple", 已成交: "green", 培育: "gray", 已关闭: "gray" };
   const accountGrades = ["A", "B", "C"];
   const directions = ["Buy-from", "Sell-to", "Two-way"];
   const accountTypes = ["SI", "Server Builder", "HPC / AI Infrastructure", "Distributor", "VAR", "Cloud / Hosting", "Data Center", "OEM / ODM", "Repair / Lifecycle", "General Trader", "Other"];
-  const oldStatusMap = { 新线索: "待筛选", 已触达: "已建立联系", 已回复: "已建立联系", 报价中: "商务评估", 谈判中: "商务评估", 已成交: "已成交", 暂缓: "培育", 无效: "已关闭" };
+  const oldStatusMap = { 新线索: "待筛选", 已确认账户: "已确认目标（待找联系人）", 已触达: "多渠道已触达（等待回复）", 已建立联系: "多渠道已触达（等待回复）", 已找到联系人: "多渠道已触达（等待回复）", 已获取联系方式: "多渠道已触达（等待回复）", LinkedIn已触达: "LinkedIn申请已发送（等待通过）", WhatsApp已触达: "WhatsApp已发送（等待回复）", Email已触达: "邮件已发送（等待回复）", 多渠道已触达: "多渠道已触达（等待回复）", 已回复: "客户已回复", 报价中: "已收到供应报价", "需求/库存发现": "已确认库存机会", 资料齐全: "资料核验中", 商务评估: "价格评估中", 核验中: "资料核验中", 谈判中: "商务谈判中", 已成交: "已成交", 暂缓: "培育", 无效: "已关闭" };
+  const progressOptions = [
+    { value: "linkedin_pending", label: "LinkedIn 已发送 · Pending", tone: "pending" },
+    { value: "email_pending", label: "Email 已发送 · 等待回复", tone: "pending" },
+    { value: "whatsapp_pending", label: "WhatsApp 已发送 · 等待回复", tone: "pending" },
+    { value: "linkedin_replied", label: "LinkedIn 已回复", tone: "reply" },
+    { value: "email_replied", label: "Email 已回复", tone: "reply" },
+    { value: "whatsapp_replied", label: "WhatsApp 已回复", tone: "reply" },
+    { value: "quote_sent", label: "已向客户发送报价", tone: "opportunity" },
+    { value: "customer_buying", label: "对方找我们采购（向我们买）", tone: "opportunity" },
+    { value: "customer_selling", label: "对方找我们销售（向我们卖）", tone: "opportunity" },
+  ];
+  const progressLabelMap = Object.fromEntries(progressOptions.map((option) => [option.value, option.label]));
+  const progressToneMap = Object.fromEntries(progressOptions.map((option) => [option.value, option.tone]));
   const RESEARCH_BATCH = "2026-08-13-amd-hpc-40";
   const AMD_EPYC_DIRECTORY = "https://www.amd.com/en/where-to-buy/processors/epyc/sys-integrators.html";
   const researchAccountSeed = [
@@ -137,6 +150,73 @@
   function directionLabel(direction) {
     return ({ "Buy-from": "向对方采购", "Sell-to": "向对方销售", "Two-way": "双向账户" })[direction] || direction || "待判断";
   }
+  function clientActivities(clientId) {
+    return (data?.activities || []).filter((activity) => Number(activity.clientId) === Number(clientId));
+  }
+  function latestClientActivity(clientId) {
+    return [...clientActivities(clientId)].sort((a, b) => new Date(b.occurredAt) - new Date(a.occurredAt))[0] || null;
+  }
+  function uniqueProgressTags(tags = []) {
+    const unique = [...new Set(tags)].filter((tag) => progressLabelMap[tag]);
+    ["linkedin", "email", "whatsapp"].forEach((channel) => {
+      if (unique.includes(`${channel}_replied`)) {
+        const pendingIndex = unique.indexOf(`${channel}_pending`);
+        if (pendingIndex >= 0) unique.splice(pendingIndex, 1);
+      }
+    });
+    return unique;
+  }
+  function progressTagsFromForm(form) {
+    return uniqueProgressTags(new FormData(form).getAll("progressTags"));
+  }
+  function derivedStatus(tags = [], fallback = "已确认目标（待找联系人）") {
+    if (tags.includes("customer_buying")) return "已发现采购需求";
+    if (tags.includes("customer_selling")) return "已收到供应报价";
+    if (tags.includes("quote_sent")) return "已向客户发送报价";
+    if (tags.some((tag) => progressToneMap[tag] === "reply")) return "客户已回复";
+    const pending = tags.filter((tag) => progressToneMap[tag] === "pending");
+    if (pending.length > 1) return "多渠道已触达（等待回复）";
+    if (pending[0] === "linkedin_pending") return "LinkedIn申请已发送（等待通过）";
+    if (pending[0] === "email_pending") return "邮件已发送（等待回复）";
+    if (pending[0] === "whatsapp_pending") return "WhatsApp已发送（等待回复）";
+    return fallback;
+  }
+  function progressSelector(selectedTags = []) {
+    const selected = new Set(selectedTags);
+    const groups = [
+      ["已触达 · 浅黄色", "pending"],
+      ["客户已回复 · 浅粉色", "reply"],
+      ["真实业务机会 · 红色", "opportunity"],
+    ];
+    return `<div class="progress-selector">${groups.map(([title, tone]) => `<fieldset class="progress-group ${tone}"><legend>${title}</legend>${progressOptions.filter((option) => option.tone === tone).map((option) => `<label><input type="checkbox" name="progressTags" value="${option.value}" ${selected.has(option.value) ? "checked" : ""} /><span>${option.label}</span></label>`).join("")}</fieldset>`).join("")}</div>`;
+  }
+  function progressPills(client) {
+    const tags = uniqueProgressTags(client.progressTags);
+    if (!tags.length) return statusPill(client.status);
+    return `<div class="progress-pills">${tags.map((tag) => `<span class="progress-pill ${progressToneMap[tag]}">${escapeHtml(progressLabelMap[tag])}</span>`).join("")}</div>`;
+  }
+  function accountProgressState(client) {
+    const tones = uniqueProgressTags(client.progressTags).map((tag) => progressToneMap[tag]);
+    if (tones.includes("opportunity")) return "opportunity";
+    if (tones.includes("reply")) return "reply";
+    if (tones.includes("pending")) return "outreach";
+    return "none";
+  }
+  function contactMethods(client) {
+    const methods = [];
+    if (client.linkedin) methods.push("LinkedIn");
+    if (client.whatsapp) methods.push("WhatsApp");
+    if (client.email) methods.push("Email");
+    return methods;
+  }
+  function contactSummary(client) {
+    const methods = contactMethods(client);
+    return `<strong>${escapeHtml(client.contactName || "待寻找")}</strong>${client.jobTitle ? `<small>${escapeHtml(client.jobTitle)}</small>` : ""}<span class="contact-methods">${methods.length ? methods.map((method) => `<i>${method}</i>`).join("") : "<em>暂无联系方式</em>"}</span>`;
+  }
+  function activitySummary(activity, total = 0) {
+    if (!activity) return `<span class="no-activity">暂无沟通记录</span>`;
+    return `<div class="activity-preview"><div><b>${escapeHtml(activity.channel)} · ${escapeHtml(activity.activityType)}</b><time>${fmt(activity.occurredAt)}</time></div><p>${escapeHtml(activity.summary || "未填写摘要")}</p>${total > 1 ? `<small>共 ${total} 条沟通记录</small>` : ""}</div>`;
+  }
   function researchAccounts() {
     const now = new Date().toISOString();
     return researchAccountSeed.map((item, index) => {
@@ -155,7 +235,7 @@
         email: item.email || "",
         whatsapp: "",
         linkedin: "",
-        status: "已确认账户",
+        status: "已确认目标（待找联系人）",
         trustScore: item.accountGrade === "A" ? 90 : 82,
         followUpStage: "联系人研究",
         lastTouchAt: "",
@@ -227,7 +307,7 @@
     return newlyAdded.length;
   }
   function normalizeData(payload) {
-    payload.version = 3;
+    payload.version = 5;
     payload.clients = (payload.clients || []).map((c) => ({
       ...c,
       status: oldStatusMap[c.status] || c.status || "待筛选",
@@ -236,7 +316,7 @@
       accountType: c.accountType || "Other",
       commercialHypothesis: c.commercialHypothesis || c.notes || "",
       verifiedEvidence: c.verifiedEvidence || "",
-      owner: c.owner || "Jenna",
+      owner: "Jenna",
     }));
     payload.tasks = payload.tasks || [];
     payload.activities = payload.activities || [];
@@ -253,6 +333,40 @@
       targetPrice: q.targetPrice || "",
       internalOwner: q.internalOwner || "Jenna",
     }));
+    payload.clients.forEach((client) => {
+      const tags = [...(client.progressTags || [])];
+      if (client.status === "LinkedIn申请已发送（等待通过）") tags.push("linkedin_pending");
+      if (client.status === "邮件已发送（等待回复）") tags.push("email_pending");
+      if (client.status === "WhatsApp已发送（等待回复）") tags.push("whatsapp_pending");
+      if (client.status === "多渠道已触达（等待回复）") {
+        if (client.linkedin) tags.push("linkedin_pending");
+        if (client.email) tags.push("email_pending");
+        if (client.whatsapp) tags.push("whatsapp_pending");
+      }
+      const activities = payload.activities.filter((activity) => Number(activity.clientId) === Number(client.id));
+      activities.forEach((activity) => {
+        const channel = String(activity.channel || "").toLowerCase();
+        const replied = activity.activityType === "客户回复";
+        if (channel.includes("linkedin")) tags.push(replied ? "linkedin_replied" : "linkedin_pending");
+        if (channel.includes("email")) tags.push(replied ? "email_replied" : "email_pending");
+        if (channel.includes("whatsapp")) tags.push(replied ? "whatsapp_replied" : "whatsapp_pending");
+      });
+      if (client.status === "客户已回复" && !tags.some((tag) => progressToneMap[tag] === "reply")) {
+        if (client.linkedin) tags.push("linkedin_replied");
+        else if (client.email) tags.push("email_replied");
+        else if (client.whatsapp) tags.push("whatsapp_replied");
+      }
+      if (client.status === "已向客户发送报价") tags.push("quote_sent");
+      if (client.status === "已发现采购需求") tags.push("customer_buying");
+      if (["已收到供应报价", "已确认库存机会"].includes(client.status)) tags.push("customer_selling");
+      payload.quotes.filter((quote) => Number(quote.clientId) === Number(client.id)).forEach((quote) => {
+        if (quote.opportunityDirection === "Sell-to") tags.push("customer_buying");
+        else if (quote.opportunityDirection === "Buy-from") tags.push("customer_selling");
+        else tags.push("customer_buying", "customer_selling");
+      });
+      client.progressTags = uniqueProgressTags(tags);
+      if (client.progressTags.length) client.status = derivedStatus(client.progressTags, client.status);
+    });
     mergeResearchBatch(payload);
     return payload;
   }
@@ -267,7 +381,7 @@
       { id: 105, company: "Wiwynn", website: "https://www.wiwynn.com", country: "Taiwan", businessRole: "潜在买家", products: "AI Server, Cloud Infrastructure, Rack Solutions", source: "官网 / LinkedIn", contactName: "", jobTitle: "", email: "", whatsapp: "", linkedin: "", status: "新线索", trustScore: 95, followUpStage: "联系人研究", lastTouchAt: "", nextFollowUpAt: isoOffset(3, 15), nextAction: "定位供应链、供应商注册或项目剩余库存合作联系人", notes: "大型云基础设施公司，匹配度高，触达应更精准。", createdAt: isoOffset(-2), updatedAt: now },
     ];
     return {
-      version: 3,
+      version: 5,
       clients: clients.map((c) => ({
         ...c,
         status: oldStatusMap[c.status] || c.status,
@@ -413,8 +527,8 @@
       today: open.filter((t) => dateKey(t.dueAt) === today).length,
       overdue: open.filter((t) => new Date(t.dueAt) < now && dateKey(t.dueAt) !== today).length,
       newWeek: data.clients.filter((c) => new Date(c.createdAt) >= weekAgo).length,
-      discovered: data.clients.filter((c) => ["需求/库存发现", "资料齐全", "商务评估", "核验中", "已成交"].includes(c.status)).length,
-      ready: data.clients.filter((c) => ["资料齐全", "商务评估", "核验中", "已成交"].includes(c.status)).length,
+      discovered: data.clients.filter((c) => accountProgressState(c) === "opportunity" || ["资料核验中", "价格评估中", "商务谈判中", "已成交"].includes(c.status)).length,
+      ready: data.clients.filter((c) => ["资料核验中", "价格评估中", "商务谈判中", "已成交"].includes(c.status)).length,
       waitingInternal: data.quotes.filter((q) => ["待内部价格", "待内部技术判断", "待内部合规判断"].includes(q.quoteStatus)).length,
       incompleteStock: data.quotes.filter((q) => quoteCompleteness(q).score < 80).length,
     };
@@ -434,7 +548,7 @@
     return { score: Math.round((complete / checks.length) * 100), missing: checks.filter(([, value]) => !hasValue(value)).map(([label]) => label) };
   }
   function renderNav() {
-    const counts = { tasks: openTasks().length, clients: data.clients.length, pipeline: data.clients.filter((c) => ["需求/库存发现", "资料齐全", "商务评估", "核验中"].includes(c.status)).length };
+    const counts = { tasks: openTasks().length, clients: data.clients.length, pipeline: data.clients.filter((c) => accountProgressState(c) === "opportunity" || ["资料核验中", "价格评估中", "商务谈判中"].includes(c.status)).length };
     return `
       <aside class="sidebar">
         <div class="brand"><span>ecore</span><small>CRM</small></div>
@@ -459,10 +573,10 @@
     const s = stats();
     const priority = [...openTasks()].sort((a, b) => (a.priority === "高" ? -1 : 1) - (b.priority === "高" ? -1 : 1) || new Date(a.dueAt) - new Date(b.dueAt)).slice(0, 6);
     const progress = [
-      ["⌕", "已确认账户", data.clients.filter((c) => c.status === "已确认账户").length],
-      ["➤", "已建立联系", data.clients.filter((c) => c.status === "已建立联系").length],
-      ["●", "需求/库存发现", data.clients.filter((c) => c.status === "需求/库存发现").length],
-      ["▤", "资料齐全及以后", s.ready],
+      ["⌕", "已确认目标", data.clients.filter((c) => c.status === "已确认目标（待找联系人）").length],
+      ["➤", "已发送待回复", data.clients.filter((c) => accountProgressState(c) === "outreach").length],
+      ["●", "客户已回复", data.clients.filter((c) => accountProgressState(c) === "reply").length],
+      ["▤", "报价 / 采购 / 销售机会", data.clients.filter((c) => accountProgressState(c) === "opportunity").length],
     ];
     const queues = [
       ["等待内部判断", s.waitingInternal, "quotes", "需要价格、技术或合规结论"],
@@ -477,7 +591,7 @@
         <article class="metric"><div><label>今日待跟进</label><strong>${s.today}</strong></div><span class="metric-icon">◷</span></article>
         <article class="metric danger"><div><label>超期任务</label><strong>${s.overdue}</strong></div><span class="metric-icon">!</span></article>
         <article class="metric"><div><label>已发现机会</label><strong>${s.discovered}</strong></div><span class="metric-icon">↗</span></article>
-        <article class="metric"><div><label>资料齐全</label><strong>${s.ready}</strong></div><span class="metric-icon">✓</span></article>
+        <article class="metric"><div><label>进入核验/评估</label><strong>${s.ready}</strong></div><span class="metric-icon">✓</span></article>
       </section>
       <section class="dashboard-grid">
         <div>
@@ -507,18 +621,27 @@
     const rows = data.clients.filter((c) => {
       const text = [c.company, c.country, c.products, c.contactName, c.email, c.accountType, c.commercialHypothesis].join(" ").toLowerCase();
       return text.includes(keyword)
-        && (clientStatus === "全部" || c.status === clientStatus)
+        && (clientStatus === "全部" || c.status === clientStatus || (c.progressTags || []).includes(clientStatus))
         && (clientGrade === "全部" || c.accountGrade === clientGrade)
         && (clientDirection === "全部" || c.direction === clientDirection);
     });
-    return `${top("账户库", "公司评级、业务方向与下一步责任")}
+    return `${top("账户库", "账户分级、沟通进展与下一步动作")}
+      <div class="progress-legend" aria-label="客户颜色说明">
+        <span><i class="legend-outreach"></i>浅黄色：已发送，等待通过 / 回复</span>
+        <span><i class="legend-reply"></i>浅粉色：客户已回复</span>
+        <span><i class="legend-opportunity"></i>红色：报价 / 采购 / 销售机会</span>
+      </div>
       <div class="toolbar"><input id="client-search" class="grow" value="${escapeHtml(clientSearch)}" placeholder="搜索公司、国家、产品、联系人或邮箱" />
         <select id="client-grade"><option>全部</option>${accountGrades.map((g) => `<option ${g === clientGrade ? "selected" : ""}>${g}</option>`).join("")}</select>
         <select id="client-direction"><option>全部</option>${directions.map((d) => `<option ${d === clientDirection ? "selected" : ""}>${d}</option>`).join("")}</select>
-        <select id="client-status"><option>全部</option>${statuses.map((s) => `<option ${s === clientStatus ? "selected" : ""}>${s}</option>`).join("")}</select>
+        <select id="client-status"><option>全部</option><optgroup label="触达与回复">${progressOptions.map((option) => `<option value="${option.value}" ${option.value === clientStatus ? "selected" : ""}>${option.label}</option>`).join("")}</optgroup><optgroup label="后续阶段">${["待筛选", "已确认目标（待找联系人）", "资料核验中", "价格评估中", "商务谈判中", "已成交", "培育", "已关闭"].map((s) => `<option ${s === clientStatus ? "selected" : ""}>${s}</option>`).join("")}</optgroup></select>
       </div>
-      <div class="table-wrap"><table><thead><tr><th>账户</th><th>等级 / 类型</th><th>业务方向</th><th>负责人</th><th>机会阶段</th><th>下次跟进</th><th>下一步</th></tr></thead>
-      <tbody>${rows.map((c) => `<tr class="clickable" data-client="${c.id}"><td><div class="company-cell"><strong>${escapeHtml(c.company)}</strong><small>${escapeHtml(c.country || "待补充")} · ${escapeHtml(c.website)}</small></div></td><td>${gradePill(c.accountGrade)}<br><small>${escapeHtml(c.accountType)}</small></td><td><strong>${escapeHtml(directionLabel(c.direction))}</strong><br><small>${escapeHtml(c.products || "待补充")}</small></td><td>${escapeHtml(c.contactName || "待寻找")}<br><small>${escapeHtml(c.jobTitle || c.owner)}</small></td><td>${statusPill(c.status)}</td><td>${fmt(c.nextFollowUpAt)}</td><td>${escapeHtml(c.nextAction || "未设置")}</td></tr>`).join("")}</tbody></table>
+      <div class="table-wrap account-table"><table><thead><tr><th>账户</th><th>等级 / 类型</th><th>业务方向</th><th>联系人 / 渠道</th><th>具体机会阶段</th><th>最近沟通</th><th>下次跟进</th><th>下一步</th></tr></thead>
+      <tbody>${rows.map((c) => {
+        const latest = latestClientActivity(c.id);
+        const activityCount = clientActivities(c.id).length;
+        return `<tr class="clickable account-progress-${accountProgressState(c)}" data-client="${c.id}"><td><div class="company-cell"><strong>${escapeHtml(c.company)}</strong><small>${escapeHtml(c.country || "待补充")} · ${escapeHtml(c.website)}</small></div></td><td>${gradePill(c.accountGrade)}<br><small>${escapeHtml(c.accountType)}</small></td><td><strong>${escapeHtml(directionLabel(c.direction))}</strong><br><small>${escapeHtml(c.products || "待补充")}</small></td><td><div class="contact-cell">${contactSummary(c)}</div></td><td>${progressPills(c)}</td><td>${activitySummary(latest, activityCount)}</td><td>${fmt(c.nextFollowUpAt)}</td><td class="next-action-cell">${escapeHtml(c.nextAction || "未设置")}</td></tr>`;
+      }).join("")}</tbody></table>
       ${rows.length ? "" : `<div class="empty">没有符合条件的客户</div>`}</div>`;
   }
   function renderPipeline() {
@@ -550,9 +673,9 @@
   }
   function renderQuotes() {
     return `${top("库存与机会核验", "Exact PN、货权、包装、证据与商务判断")}
-      <div class="verification-guide"><b>进入“资料齐全”的最低标准</b><span>Exact PN · Qty · Condition · Packaging · Location · Ownership · Availability · Price · D/C · COO · Evidence · Traceability · Warranty · Lead time · Incoterm</span></div>
-      <div class="table-wrap"><table><thead><tr><th>公司 / 方向</th><th>料号</th><th>产品</th><th>数量 / 价格</th><th>货况 / 包装</th><th>货权 / 地点</th><th>证据完整度</th><th>内部状态</th></tr></thead>
-      <tbody>${data.quotes.map((q) => { const c = clientById(q.clientId); const quality = quoteCompleteness(q); return `<tr class="clickable" data-client="${q.clientId}"><td><strong>${escapeHtml(c?.company || "未知客户")}</strong><br><small>${escapeHtml(directionLabel(q.opportunityDirection))}</small></td><td><strong>${escapeHtml(q.partNumber)}</strong><br><small>${escapeHtml(q.dateCode || "D/C待确认")} · ${escapeHtml(q.countryOfOrigin || "COO待确认")}</small></td><td>${escapeHtml(q.category)} · ${escapeHtml(q.brand)}<br><small>${escapeHtml(q.description)}</small></td><td>${q.quantity || "待确认"} pcs<br><strong>${escapeHtml(q.currency)} ${escapeHtml(q.unitPrice || "待确认")}</strong></td><td>${escapeHtml(q.condition || "待确认")}<br><small>${escapeHtml(q.packaging || "包装待确认")}</small></td><td>${escapeHtml(q.ownership || "待确认")}<br><small>${escapeHtml(q.stockLocation || "地点待确认")}</small></td><td><div class="completion"><b>${quality.score}%</b><i style="--progress:${quality.score}%"></i><small>${quality.missing.length ? `缺：${escapeHtml(quality.missing.slice(0, 3).join("、"))}${quality.missing.length > 3 ? "…" : ""}` : "资料完整"}</small></div></td><td>${escapeHtml(q.quoteStatus || "待评估")}<br><small>${escapeHtml(q.internalOwner || "未分配")}</small></td></tr>`; }).join("")}</tbody></table>
+      <div class="verification-guide"><b>进入“资料核验中”的最低标准</b><span>Exact PN · Qty · Condition · Packaging · Location · Ownership · Availability · Price · D/C · COO · Evidence · Traceability · Warranty · Lead time · Incoterm</span></div>
+      <div class="table-wrap"><table><thead><tr><th>公司 / 方向</th><th>料号</th><th>产品</th><th>数量 / 价格</th><th>货况 / 包装</th><th>货权 / 地点</th><th>证据完整度</th><th>评估状态</th></tr></thead>
+      <tbody>${data.quotes.map((q) => { const c = clientById(q.clientId); const quality = quoteCompleteness(q); return `<tr class="clickable" data-client="${q.clientId}"><td><strong>${escapeHtml(c?.company || "未知客户")}</strong><br><small>${escapeHtml(directionLabel(q.opportunityDirection))}</small></td><td><strong>${escapeHtml(q.partNumber)}</strong><br><small>${escapeHtml(q.dateCode || "D/C待确认")} · ${escapeHtml(q.countryOfOrigin || "COO待确认")}</small></td><td>${escapeHtml(q.category)} · ${escapeHtml(q.brand)}<br><small>${escapeHtml(q.description)}</small></td><td>${q.quantity || "待确认"} pcs<br><strong>${escapeHtml(q.currency)} ${escapeHtml(q.unitPrice || "待确认")}</strong></td><td>${escapeHtml(q.condition || "待确认")}<br><small>${escapeHtml(q.packaging || "包装待确认")}</small></td><td>${escapeHtml(q.ownership || "待确认")}<br><small>${escapeHtml(q.stockLocation || "地点待确认")}</small></td><td><div class="completion"><b>${quality.score}%</b><i style="--progress:${quality.score}%"></i><small>${quality.missing.length ? `缺：${escapeHtml(quality.missing.slice(0, 3).join("、"))}${quality.missing.length > 3 ? "…" : ""}` : "资料完整"}</small></div></td><td>${escapeHtml(q.quoteStatus || "待评估")}</td></tr>`; }).join("")}</tbody></table>
       ${data.quotes.length ? "" : `<div class="empty">还没有报价记录</div>`}</div>`;
   }
   function reportText() {
@@ -563,7 +686,7 @@
     const open = openTasks();
     const focus = [...open].sort((a, b) => new Date(a.dueAt) - new Date(b.dueAt)).slice(0, 5);
     const incomplete = data.quotes.filter((q) => quoteCompleteness(q).score < 80);
-    return `ecore 海外采购与业务开发周报\n\n一、有效业务进展\n- 新增合格账户：${s.newWeek} 家\n- 新增有效触达：${weeklyActivities.length} 次\n- 已发现需求/库存机会：${s.discovered} 家\n- 资料齐全及以后阶段：${s.ready} 家\n- 新增库存/需求记录：${weeklyQuotes.length} 条\n- 开放任务：${open.length} 个，其中超期 ${s.overdue} 个\n\n二、重点机会与下一步\n${focus.length ? focus.map((t, i) => { const c = clientById(t.clientId); return `${i + 1}. ${c?.company || "未知客户"}｜${c?.accountGrade || "C"}级｜${directionLabel(c?.direction)}：${t.title}（${fmt(t.dueAt)}）`; }).join("\n") : "- 暂无开放任务"}\n\n三、内部卡点\n- 等待内部价格/技术/合规判断：${s.waitingInternal} 条\n- 库存资料完整度低于80%：${incomplete.length} 条\n- 重点补齐：Exact PN、Qty、Condition、Packaging、Location、Ownership、Availability、Price、D/C、COO、Evidence、Traceability、Warranty。\n\n四、下周动作\n- 优先推进A类账户及已发现真实机会，不以礼貌回复代替机会。\n- 采购端聚焦全新/未使用、可追溯的DDR4/DDR5 RDIMM与Enterprise SSD。\n- 每个开放账户必须有负责人、明确下一步和日期；无下一步日期不进入活跃管道。`;
+    return `ecore 海外采购与业务开发周报\n\n一、有效业务进展\n- 新增合格账户：${s.newWeek} 家\n- 新增有效触达：${weeklyActivities.length} 次\n- 已发现需求/库存机会：${s.discovered} 家\n- 进入核验/评估阶段：${s.ready} 家\n- 新增库存/需求记录：${weeklyQuotes.length} 条\n- 开放任务：${open.length} 个，其中超期 ${s.overdue} 个\n\n二、重点机会与下一步\n${focus.length ? focus.map((t, i) => { const c = clientById(t.clientId); return `${i + 1}. ${c?.company || "未知客户"}｜${c?.accountGrade || "C"}级｜${directionLabel(c?.direction)}：${t.title}（${fmt(t.dueAt)}）`; }).join("\n") : "- 暂无开放任务"}\n\n三、内部卡点\n- 等待内部价格/技术/合规判断：${s.waitingInternal} 条\n- 库存资料完整度低于80%：${incomplete.length} 条\n- 重点补齐：Exact PN、Qty、Condition、Packaging、Location、Ownership、Availability、Price、D/C、COO、Evidence、Traceability、Warranty。\n\n四、下周动作\n- 优先推进A类账户及已发现真实机会，不以礼貌回复代替机会。\n- 采购端聚焦全新/未使用、可追溯的DDR4/DDR5 RDIMM与Enterprise SSD。\n- 每个开放账户必须有明确下一步和日期；无下一步日期不进入活跃管道。`;
   }
   function renderReport() {
     const s = stats();
@@ -573,7 +696,7 @@
         <div class="kpi-item"><span>账户总数</span><strong>${data.clients.length}</strong></div>
         <div class="kpi-item"><span>开放任务</span><strong>${openTasks().length}</strong></div>
         <div class="kpi-item"><span>已发现机会</span><strong>${s.discovered}</strong></div>
-        <div class="kpi-item"><span>资料齐全</span><strong>${s.ready}</strong></div>
+        <div class="kpi-item"><span>进入核验 / 评估</span><strong>${s.ready}</strong></div>
         <div class="kpi-item"><span>超期任务</span><strong>${s.overdue}</strong></div>
       </div></aside></section>`;
   }
@@ -585,15 +708,14 @@
     const quotes = data.quotes.filter((q) => q.clientId === c.id);
     const detail = (label, value, wide = false) => `<div class="detail-card ${wide ? "detail-wide" : ""}"><label>${label}</label><p>${value || "待补充"}</p></div>`;
     return `<div class="drawer-backdrop" id="drawer-backdrop"></div><aside class="drawer">
-      <div class="drawer-head"><div><p>${escapeHtml(c.country)} · ${escapeHtml(c.accountType)} · ${escapeHtml(directionLabel(c.direction))}</p><h2>${escapeHtml(c.company)}</h2>${gradePill(c.accountGrade)} ${statusPill(c.status)} ${trustPill(c.trustScore)}</div><button class="icon-button" id="close-drawer">×</button></div>
+      <div class="drawer-head"><div><p>${escapeHtml(c.country)} · ${escapeHtml(c.accountType)} · ${escapeHtml(directionLabel(c.direction))}</p><h2>${escapeHtml(c.company)}</h2><div class="drawer-badges">${gradePill(c.accountGrade)} ${progressPills(c)} ${trustPill(c.trustScore)}</div></div><button class="icon-button" id="close-drawer">×</button></div>
       <div class="drawer-actions"><button class="primary" data-action="activity" data-client-id="${c.id}">＋ 记录沟通</button><button class="secondary" data-action="quote" data-client-id="${c.id}">＋ 添加库存/需求</button><button class="secondary" data-action="edit-client" data-client-id="${c.id}">编辑账户</button></div>
       <div class="detail-grid">
         ${detail("官网", c.website ? `<a href="${escapeHtml(c.website)}" target="_blank" rel="noopener">${escapeHtml(c.website)}</a>` : "")}
         ${detail("产品方向", escapeHtml(c.products))}
         ${detail("联系人", escapeHtml([c.contactName, c.jobTitle].filter(Boolean).join(" · ")))}
-        ${detail("Email / WhatsApp", escapeHtml([c.email, c.whatsapp].filter(Boolean).join(" · ")))}
-        ${detail("业务负责人", escapeHtml(c.owner))}
-        ${detail("机会阶段", escapeHtml(c.status))}
+        ${detail("LinkedIn / WhatsApp / Email", escapeHtml([c.linkedin, c.whatsapp, c.email].filter(Boolean).join(" · ")))}
+        ${detail("触达 / 回复 / 业务机会", progressPills(c), true)}
         ${detail("下次跟进", fmt(c.nextFollowUpAt))}
         ${detail("下一步动作", escapeHtml(c.nextAction), true)}
         ${detail("商业假设", escapeHtml(c.commercialHypothesis), true)}
@@ -621,13 +743,14 @@
           <div class="field"><label>账户等级 *</label><select name="accountGrade">${accountGrades.map((g) => `<option ${selected(g, existing?.accountGrade || "B")}>${g}</option>`).join("")}</select></div>
           <div class="field"><label>公司类型</label><select name="accountType">${accountTypes.map((t) => `<option ${selected(t, existing?.accountType || "SI")}>${t}</option>`).join("")}</select></div>
           <div class="field"><label>业务方向</label><select name="direction">${directions.map((d) => `<option ${selected(d, existing?.direction || "Buy-from")}>${d}</option>`).join("")}</select></div>
-          <div class="field"><label>机会阶段</label><select name="status">${statuses.map((s) => `<option ${selected(s, existing?.status || "待筛选")}>${s}</option>`).join("")}</select></div>
-          <div class="field"><label>内部负责人</label><input name="owner" value="${val("owner", "Jenna")}" /></div>
+          <input type="hidden" name="status" value="${val("status", "已确认目标（待找联系人）")}" />
+          <div class="field wide"><label>触达 / 回复 / 业务机会（可多选）</label>${progressSelector(existing?.progressTags || [])}</div>
           <div class="field wide"><label>主营与匹配产品</label><input name="products" value="${val("products")}" placeholder="DDR5 RDIMM, Enterprise SSD…" /></div>
           <div class="field"><label>联系人</label><input name="contactName" value="${val("contactName")}" /></div>
           <div class="field"><label>职位</label><input name="jobTitle" value="${val("jobTitle")}" /></div>
           <div class="field"><label>Email</label><input name="email" type="email" value="${val("email")}" /></div>
           <div class="field"><label>WhatsApp</label><input name="whatsapp" value="${val("whatsapp")}" /></div>
+          <div class="field"><label>LinkedIn</label><input name="linkedin" value="${val("linkedin")}" placeholder="个人主页链接" /></div>
           <div class="field"><label>线索来源</label><select name="source">${["官网", "LinkedIn", "展会清单", "合作伙伴目录", "转介绍", "行业目录", "WhatsApp"].map((x) => `<option ${selected(x, existing?.source || "官网")}>${x}</option>`).join("")}</select></div>
           <div class="field"><label>可信度评分</label><input name="trustScore" type="number" min="0" max="100" value="${val("trustScore", "60")}" /></div>
           <div class="field"><label>下次跟进时间 *</label><input name="nextFollowUpAt" type="datetime-local" required value="${existing?.nextFollowUpAt ? localDateTime(existing.nextFollowUpAt) : localInput(3, 10)}" /></div>
@@ -638,12 +761,13 @@
         </div><div class="modal-actions"><button type="button" class="secondary" data-close-modal>取消</button><button class="primary" type="submit">${existing ? "保存修改" : "保存账户并创建跟进"}</button></div></form></div>`;
     }
     if (modal.type === "activity") {
+      const currentClient = clientById(modal.clientId);
       return `<div class="modal-backdrop"><form class="modal" id="activity-form"><div class="modal-head"><h2>记录沟通</h2><button type="button" class="icon-button" data-close-modal>×</button></div>
         <div class="form-grid">
           <div class="field"><label>客户 *</label><select name="clientId" required><option value="">请选择</option>${clientOptions(modal.clientId)}</select></div>
           <div class="field"><label>渠道</label><select name="channel"><option>Email</option><option>WhatsApp</option><option>LinkedIn</option><option>电话</option><option>官网表单</option><option>其他</option></select></div>
           <div class="field"><label>沟通类型</label><select name="activityType"><option>首次触达</option><option>二次跟进</option><option>三次跟进</option><option>四次跟进</option><option>客户回复</option><option>报价沟通</option><option>电话沟通</option></select></div>
-          <div class="field"><label>更新机会阶段</label><select name="status">${statuses.map((s) => `<option ${s === (clientById(modal.clientId)?.status || "已建立联系") ? "selected" : ""}>${s}</option>`).join("")}</select></div>
+          <div class="field wide"><label>本次结果 / 业务机会（可多选）</label>${progressSelector(currentClient?.progressTags || [])}</div>
           <div class="field wide"><label>本次沟通摘要 *</label><textarea name="summary" required></textarea></div>
           <div class="field"><label>下次跟进时间</label><input name="nextDueAt" type="datetime-local" value="${localInput(3, 10)}" /></div>
           <div class="field"><label>下次动作</label><input name="nextAction" placeholder="例如：索取实物图与 Date Code" /></div>
@@ -673,7 +797,6 @@
         <div class="field"><label>图片 / 视频证据</label><input name="evidence" placeholder="已收到 / 待确认 / 文件名或链接" /></div>
         <div class="field"><label>来源与可追溯性</label><input name="traceability" placeholder="PO / Invoice / authorization / source explanation" /></div>
         <div class="field"><label>Warranty / RMA</label><input name="warranty" placeholder="期限、退换方式、运费责任" /></div>
-        <div class="field"><label>内部负责人</label><input name="internalOwner" value="Jenna" /></div>
         <div class="field wide"><label>内部评估状态</label><select name="quoteStatus"><option>资料待核验</option><option>待内部价格</option><option>待内部技术判断</option><option>待内部合规判断</option><option>价格可谈</option><option>价格偏高</option><option>进入验货</option><option>已接受</option><option>已拒绝</option></select></div>
       </div><div class="modal-actions"><button type="button" class="secondary" data-close-modal>取消</button><button class="primary" type="submit">保存报价</button></div></form></div>`;
   }
@@ -736,31 +859,39 @@
   }
   async function submitClient(event) {
     event.preventDefault();
+    const selectedTags = progressTagsFromForm(event.currentTarget);
     const f = Object.fromEntries(new FormData(event.currentTarget));
     const existingId = Number(f.clientId || 0);
     const id = existingId || uid();
     const createdAt = new Date().toISOString();
     const next = f.nextFollowUpAt ? new Date(f.nextFollowUpAt).toISOString() : "";
     const score = Math.max(0, Math.min(100, Number(f.trustScore || 60)));
+    if (f.linkedin.trim() && !selectedTags.some((tag) => tag.startsWith("linkedin_"))) selectedTags.push("linkedin_pending");
+    if (f.email.trim() && !selectedTags.some((tag) => tag.startsWith("email_"))) selectedTags.push("email_pending");
+    if (f.whatsapp.trim() && !selectedTags.some((tag) => tag.startsWith("whatsapp_"))) selectedTags.push("whatsapp_pending");
     await transact((draft) => {
-      const values = { company: f.company.trim(), website: f.website.trim(), country: f.country.trim(), accountGrade: f.accountGrade, accountType: f.accountType, direction: f.direction, businessRole: f.direction === "Buy-from" ? "供应商" : f.direction === "Sell-to" ? "潜在买家" : "双向合作", products: f.products.trim(), source: f.source, contactName: f.contactName.trim(), jobTitle: f.jobTitle.trim(), email: f.email.trim(), whatsapp: f.whatsapp.trim(), status: f.status, trustScore: score, owner: f.owner.trim() || "Jenna", nextFollowUpAt: next, nextAction: f.nextAction.trim(), commercialHypothesis: f.commercialHypothesis.trim(), verifiedEvidence: f.verifiedEvidence.trim(), notes: f.notes.trim(), updatedAt: createdAt };
+      const progressTags = uniqueProgressTags(selectedTags);
+      const values = { company: f.company.trim(), website: f.website.trim(), country: f.country.trim(), accountGrade: f.accountGrade, accountType: f.accountType, direction: f.direction, businessRole: f.direction === "Buy-from" ? "供应商" : f.direction === "Sell-to" ? "潜在买家" : "双向合作", products: f.products.trim(), source: f.source, contactName: f.contactName.trim(), jobTitle: f.jobTitle.trim(), email: f.email.trim(), whatsapp: f.whatsapp.trim(), linkedin: f.linkedin.trim(), progressTags, status: derivedStatus(progressTags, f.status || "已确认目标（待找联系人）"), trustScore: score, nextFollowUpAt: next, nextAction: f.nextAction.trim(), commercialHypothesis: f.commercialHypothesis.trim(), verifiedEvidence: f.verifiedEvidence.trim(), notes: f.notes.trim(), updatedAt: createdAt };
       const existing = draft.clients.find((c) => c.id === existingId);
       if (existing) Object.assign(existing, values);
-      else draft.clients.unshift({ id, ...values, linkedin: "", followUpStage: "账户研究", lastTouchAt: "", createdAt });
+      else draft.clients.unshift({ id, ...values, followUpStage: "账户研究", lastTouchAt: "", createdAt });
       if (!existing && next) draft.tasks.push({ id: uid(), clientId: id, title: f.nextAction.trim(), dueAt: next, priority: f.accountGrade === "A" ? "高" : "普通", stage: "账户研究", completed: false });
     }, existingId ? "账户资料已更新" : "账户已保存，并创建下次跟进");
     modal = null; quickDraft = { company: "", website: "" }; render();
   }
   async function submitActivity(event) {
     event.preventDefault();
+    const selectedTags = progressTagsFromForm(event.currentTarget);
     const f = Object.fromEntries(new FormData(event.currentTarget));
+    const channelKey = f.channel === "LinkedIn" ? "linkedin" : f.channel === "WhatsApp" ? "whatsapp" : f.channel === "Email" ? "email" : "";
+    if (channelKey) selectedTags.push(`${channelKey}_${f.activityType === "客户回复" ? "replied" : "pending"}`);
     const clientId = Number(f.clientId);
     const next = f.nextDueAt ? new Date(f.nextDueAt).toISOString() : "";
     const now = new Date().toISOString();
     await transact((draft) => {
-      draft.activities.unshift({ id: uid(), clientId, channel: f.channel, activityType: f.activityType, stage: f.activityType, summary: f.summary.trim(), nextAction: f.nextAction.trim(), occurredAt: now, nextDueAt: next });
+      draft.activities.unshift({ id: uid(), clientId, channel: f.channel, activityType: f.activityType, stage: f.activityType, progressTags: selectedTags, summary: f.summary.trim(), nextAction: f.nextAction.trim(), occurredAt: now, nextDueAt: next });
       const c = draft.clients.find((item) => item.id === clientId);
-      if (c) { c.status = f.status; c.followUpStage = f.activityType; c.lastTouchAt = now; c.nextFollowUpAt = next; c.nextAction = f.nextAction.trim(); c.updatedAt = now; }
+      if (c) { c.progressTags = uniqueProgressTags([...(c.progressTags || []), ...selectedTags]); c.status = derivedStatus(c.progressTags, c.status); c.followUpStage = f.activityType; c.lastTouchAt = now; c.nextFollowUpAt = next; c.nextAction = f.nextAction.trim(); c.updatedAt = now; }
       if (next && f.nextAction.trim()) draft.tasks.push({ id: uid(), clientId, title: f.nextAction.trim(), dueAt: next, priority: ["三次跟进", "四次跟进"].includes(f.activityType) ? "高" : "普通", stage: f.activityType, completed: false });
     }, "沟通已记录，下一次跟进已安排");
     modal = null; render();
@@ -771,10 +902,15 @@
     const clientId = Number(f.clientId);
     const now = new Date().toISOString();
     await transact((draft) => {
-      const quote = { id: uid(), clientId, opportunityDirection: f.opportunityDirection, partNumber: f.partNumber.trim(), category: f.category, brand: f.brand.trim(), description: f.description.trim(), quantity: Number(f.quantity || 0), unitPrice: f.unitPrice.trim(), targetPrice: f.targetPrice.trim(), currency: f.currency, condition: f.condition, packaging: f.packaging.trim() || "待确认", dateCode: f.dateCode.trim() || "待确认", countryOfOrigin: f.countryOfOrigin.trim() || "待确认", stockLocation: f.stockLocation.trim() || "待确认", ownership: f.ownership, availability: f.availability.trim() || "待确认", leadTime: f.leadTime.trim() || "待确认", incoterm: f.incoterm, evidence: f.evidence.trim() || "待确认", traceability: f.traceability.trim() || "待确认", warranty: f.warranty.trim() || "待确认", internalOwner: f.internalOwner.trim() || "Jenna", quoteStatus: f.quoteStatus, createdAt: now };
+      const quote = { id: uid(), clientId, opportunityDirection: f.opportunityDirection, partNumber: f.partNumber.trim(), category: f.category, brand: f.brand.trim(), description: f.description.trim(), quantity: Number(f.quantity || 0), unitPrice: f.unitPrice.trim(), targetPrice: f.targetPrice.trim(), currency: f.currency, condition: f.condition, packaging: f.packaging.trim() || "待确认", dateCode: f.dateCode.trim() || "待确认", countryOfOrigin: f.countryOfOrigin.trim() || "待确认", stockLocation: f.stockLocation.trim() || "待确认", ownership: f.ownership, availability: f.availability.trim() || "待确认", leadTime: f.leadTime.trim() || "待确认", incoterm: f.incoterm, evidence: f.evidence.trim() || "待确认", traceability: f.traceability.trim() || "待确认", warranty: f.warranty.trim() || "待确认", quoteStatus: f.quoteStatus, createdAt: now };
       draft.quotes.unshift(quote);
       const c = draft.clients.find((item) => item.id === clientId);
-      if (c && !["已成交", "已关闭"].includes(c.status)) { c.status = quoteCompleteness(quote).score >= 80 ? "资料齐全" : "需求/库存发现"; c.updatedAt = now; }
+      if (c && !["已成交", "已关闭"].includes(c.status)) {
+        const opportunityTags = f.opportunityDirection === "Sell-to" ? ["customer_buying"] : f.opportunityDirection === "Buy-from" ? ["customer_selling"] : ["customer_buying", "customer_selling"];
+        c.progressTags = uniqueProgressTags([...(c.progressTags || []), ...opportunityTags]);
+        c.status = derivedStatus(c.progressTags, c.status);
+        c.updatedAt = now;
+      }
     }, "报价与库存信息已保存");
     modal = null; render();
   }
