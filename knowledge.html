@@ -5,25 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#1768f2" />
   <title>Ecore 业务知识库</title>
-  <link rel="stylesheet" href="./styles.css?v=6" />
-  <link rel="stylesheet" href="./v2-enhancements.css?v=1" />
+  <link rel="stylesheet" href="./styles.css?v=7" />
+  <link rel="stylesheet" href="./v2-enhancements.css?v=2" />
 </head>
 <body class="knowledge-body">
   <div class="knowledge-shell">
     <aside class="knowledge-sidebar">
       <a class="knowledge-back" href="./index.html">← 返回 CRM</a>
-      <div class="knowledge-brand"><strong>ecore</strong><span>业务知识库</span></div>
+      <div class="knowledge-brand"><strong>ecore</strong><span>业务知识库 · 工作速查</span></div>
       <nav id="knowledge-categories"></nav>
     </aside>
     <main class="knowledge-main">
       <header class="knowledge-header">
-        <div><span class="eyebrow">Jenna · DAILY SALES DESK</span><h1>业务速查知识库</h1><p>不是百科。只放开发客户、采购判断、产品识别和商务沟通时真正会查的东西。</p></div>
-        <div class="knowledge-search-wrap"><input id="knowledge-search" type="search" placeholder="搜 PN、RDIMM、DWPD、U.2、5090、Trade Reference…" autocomplete="off" /></div>
+        <div><span class="eyebrow">DAILY SALES & SOURCING DESK</span><h1>业务速查知识库</h1><p>目标不是“学完”，而是你遇到一个词、一个料号、一家供应商时，30 秒内知道它是什么、该判断什么、下一句问什么。</p></div>
+        <div class="knowledge-search-wrap"><input id="knowledge-search" type="search" placeholder="搜 PN、D/C、RDIMM、DWPD、EXW、RMA、5090、库存真假…" autocomplete="off" /></div>
       </header>
-      <section class="knowledge-tips"><strong>使用原则</strong><span>看到陌生词 → 搜一下；准备询价 → 看“采购确认项”；判断公司 → 看“客户类型 / 风控”；要回复客户 → 看“商务速查”。</span></section>
+      <section class="knowledge-tips"><strong>最实用的用法</strong><span>看不懂客户说什么 → 搜词；收到库存 → 看“采购判断”；不知道公司值不值得聊 → 看“客户开发”；准备付款/验货 → 看“风控与交易”。</span></section>
+      <div id="knowledge-scenarios" class="knowledge-scenarios"></div>
       <div id="knowledge-content"></div>
     </main>
   </div>
-  <script src="./knowledge.js?v=1"></script>
+  <script src="./knowledge.js?v=2"></script>
 </body>
 </html>
