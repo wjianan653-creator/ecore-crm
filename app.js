@@ -49,6 +49,7 @@
   const progressLabelMap = Object.fromEntries(progressOptions.map((option) => [option.value, option.label]));
   const progressToneMap = Object.fromEntries(progressOptions.map((option) => [option.value, option.tone]));
   const RESEARCH_BATCH = "2026-08-13-amd-hpc-40";
+  const ALL_CLIENTS_TOUCHED_MIGRATION = "2026-08-31-all-clients-touched";
   const AMD_EPYC_DIRECTORY = "https://www.amd.com/en/where-to-buy/processors/epyc/sys-integrators.html";
   const researchAccountSeed = [
     { company: "Abacus Electric", website: "https://www.abacus.cz/", country: "Czech Republic", accountGrade: "A", accountType: "Server Builder", focus: true, direction: "Buy-from", evidence: "官网明确生产 white-box 服务器与存储，并经营服务器部件、内存和 SSD；AMD EPYC 官方方案商。", hypothesis: "有服务器组装、现货与项目订单，最可能出现 BOM 变更、订单未交付或全新部件余量。" },
@@ -368,6 +369,18 @@
       if (client.progressTags.length) client.status = derivedStatus(client.progressTags, client.status);
     });
     mergeResearchBatch(payload);
+    payload.appliedMigrations = payload.appliedMigrations || [];
+    if (!payload.appliedMigrations.includes(ALL_CLIENTS_TOUCHED_MIGRATION)) {
+      payload.clients.forEach((client) => {
+        const hasReplyOrOpportunity = uniqueProgressTags(client.progressTags).some((tag) =>
+          ["reply", "opportunity"].includes(progressToneMap[tag]),
+        );
+        if (!hasReplyOrOpportunity && !["资料核验中", "价格评估中", "商务谈判中", "已成交", "已关闭"].includes(client.status)) {
+          client.status = "多渠道已触达（等待回复）";
+        }
+      });
+      payload.appliedMigrations.push(ALL_CLIENTS_TOUCHED_MIGRATION);
+    }
     return payload;
   }
 
