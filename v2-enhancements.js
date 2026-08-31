@@ -36,17 +36,21 @@
       selector.querySelectorAll('label').forEach((label) => {
         const input = label.querySelector('input[name="progressTags"]');
         const span = label.querySelector('span');
-        if (input && span && map[input.value]) span.textContent = map[input.value];
+        if (input && span && map[input.value] && span.textContent !== map[input.value]) {
+          span.textContent = map[input.value];
+        }
       });
       selector.querySelectorAll('fieldset').forEach((group) => {
         const legend = group.querySelector('legend');
         if (!legend) return;
-        if (group.classList.contains('pending')) legend.textContent = '未形成对话：只记“已发送”';
-        if (group.classList.contains('reply')) legend.textContent = '对方真正回复后再记录';
+        let nextLegend = '';
+        if (group.classList.contains('pending')) nextLegend = '未形成对话：只记“已发送”';
+        if (group.classList.contains('reply')) nextLegend = '对方真正回复后再记录';
         if (group.classList.contains('opportunity')) {
-          legend.textContent = '出现报价 / 采购 / 库存机会后再记录';
+          nextLegend = '出现报价 / 采购 / 库存机会后再记录';
           group.classList.add('v2-collapsible');
         }
+        if (nextLegend && legend.textContent !== nextLegend) legend.textContent = nextLegend;
       });
     });
   }
