@@ -50,6 +50,314 @@
   const progressToneMap = Object.fromEntries(progressOptions.map((option) => [option.value, option.tone]));
   const RESEARCH_BATCH = "2026-08-13-amd-hpc-40";
   const ALL_CLIENTS_TOUCHED_MIGRATION = "2026-08-31-all-clients-touched";
+
+  const OEM_CHANNEL_BATCH = "2026-08-31-oem-authorized-channel-19";
+  const oemChannelSeed = [
+    {
+        "company": "MEMPHIS Electronic",
+        "website": "https://www.memphis.de/en/",
+        "country": "Germany",
+        "accountGrade": "A",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Samsung DRAM / NAND / Enterprise Memory",
+        "email": "sales@memphis.de",
+        "linkedin": "https://www.linkedin.com/company/memphis-electronic-gmbh",
+        "role": "Procurement / Product / Key Account",
+        "score": 93,
+        "priority": "A1",
+        "evidence": "Samsung Semiconductor EMEA 官方 Sales Representatives & Distributors 目录列名；LinkedIn 规模 51–200，持续发布 memory / DRAM / NAND 内容。",
+        "hypothesis": "BUY：采购 Samsung 企业级内存；SELL：在紧缺、BOM 变化或项目补单时提供可追溯全新原厂货。"
+    },
+    {
+        "company": "SIMMS International",
+        "website": "https://www.simms.co.uk/",
+        "country": "United Kingdom",
+        "accountGrade": "A",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Micron Enterprise DRAM / SSD / Industrial Storage",
+        "email": "marketing@simms.co.uk",
+        "linkedin": "https://uk.linkedin.com/company/simms-international-plc",
+        "role": "Enterprise Sales / Procurement / Product Manager",
+        "score": 93,
+        "priority": "A1",
+        "evidence": "Micron 官网 Authorized Distributors 目录列名；LinkedIn 规模 11–50，主营 enterprise DRAM、SSD 与工业存储。",
+        "hypothesis": "BUY：Micron RDIMM/SSD；SELL：针对缺货、项目余量和BOM-change新货开展双向合作。"
+    },
+    {
+        "company": "Convergent Systems (S) Pte Ltd",
+        "website": "https://www.convergent.com.sg/",
+        "country": "Singapore",
+        "accountGrade": "A",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Micron RDIMM / Western Digital Enterprise SSD & HDD",
+        "email": "enquiry@convergent.com.sg",
+        "linkedin": "https://www.linkedin.com/company/convergent-systems-s-pte-ltd",
+        "role": "Memory/Storage Product Manager / Procurement",
+        "score": 92,
+        "priority": "A1",
+        "evidence": "Micron 官网 Authorized Distributors 目录列名；公司官网有 Western Digital 品牌合作页；新加坡本地渠道。",
+        "hypothesis": "BUY：Micron企业内存及WD企业盘；SELL：用明确PN、项目补单或缺货需求切入。"
+    },
+    {
+        "company": "Uniquest Asia Korea",
+        "website": "https://www.uniquest.co.kr/",
+        "country": "South Korea",
+        "accountGrade": "A",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Micron Enterprise Memory / Semiconductor",
+        "email": "micron@uniquest.co.kr",
+        "linkedin": "https://www.linkedin.com/company/uniquest-corporation",
+        "role": "Micron Product Manager / Memory Sales / Purchasing",
+        "score": 91,
+        "priority": "A1",
+        "evidence": "Micron 官网 Authorized Distributors 韩国目录列名，并公开 Micron 专属邮箱。",
+        "hypothesis": "BUY：获取韩国Micron企业RDIMM价格与交期基准；SELL：仅在确认具体缺货/BOM需求后推进。"
+    },
+    {
+        "company": "GreenHill Elektronik GmbH",
+        "website": "https://greenhill.de/",
+        "country": "Germany",
+        "accountGrade": "A",
+        "accountType": "Distributor",
+        "direction": "Buy-from",
+        "products": "Samsung Semiconductor / Server DRAM / SSD",
+        "email": "info@greenhill.de",
+        "linkedin": "",
+        "role": "Memory Sales / Procurement",
+        "score": 88,
+        "priority": "A2",
+        "evidence": "Samsung Semiconductor EMEA 官方 Sales Representatives & Distributors 目录列名；德国小型渠道，官方联系资料完整。",
+        "hypothesis": "BUY优先：用具体Samsung服务器RDIMM/SSD PN核验产品线、现货能力、出口和原包装条件。"
+    },
+    {
+        "company": "AV Concept Singapore Pte Ltd",
+        "website": "https://www.avconcept.com/",
+        "country": "Singapore",
+        "accountGrade": "A",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Samsung DRAM / SSD / Semiconductor",
+        "email": "michael.lim@avconcept.com",
+        "linkedin": "",
+        "role": "Samsung Product Manager / Purchasing",
+        "score": 88,
+        "priority": "A2",
+        "evidence": "Samsung Semiconductor SE & SW Asia 官方 Sales Representatives & Distributors 目录列名。",
+        "hypothesis": "BUY：Samsung服务器RDIMM/企业SSD；SELL：只针对其项目缺货或明确PN，不发泛库存介绍。"
+    },
+    {
+        "company": "Albatron Technology Co., Ltd.",
+        "website": "https://www.albatron.com.tw/",
+        "country": "Taiwan",
+        "accountGrade": "A",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Micron Enterprise RDIMM / SSD",
+        "email": "bmdp@albatron.com.tw",
+        "linkedin": "",
+        "role": "Memory Product Manager / Sales",
+        "score": 88,
+        "priority": "A2",
+        "evidence": "Micron 官网 Authorized Distributors 亚洲目录列名。",
+        "hypothesis": "BUY：建立台湾Micron授权报价池并核验原包装/出口；SELL：只处理紧缺指定PN。"
+    },
+    {
+        "company": "Unitron Tech",
+        "website": "http://www.unitrontech.com/",
+        "country": "South Korea",
+        "accountGrade": "A",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Micron Enterprise Memory",
+        "email": "csh2@unitrontech.com",
+        "linkedin": "",
+        "role": "Micron Product Manager / Purchasing",
+        "score": 89,
+        "priority": "A2",
+        "evidence": "Micron 官网 Authorized Distributors 韩国目录列名，并公开公司域名邮箱。",
+        "hypothesis": "BUY：与Uniquest并行核验Micron企业RDIMM价格和交期；SELL：取得明确需求后再推进。"
+    },
+    {
+        "company": "PALTEK Corporation",
+        "website": "https://www.paltek.co.jp/",
+        "country": "Japan",
+        "accountGrade": "B",
+        "accountType": "Distributor",
+        "direction": "Buy-from",
+        "products": "Micron Enterprise Memory / Storage",
+        "email": "info_pal@paltek.co.jp",
+        "linkedin": "",
+        "role": "Micron Sales / Product Marketing",
+        "score": 83,
+        "priority": "B1",
+        "evidence": "Micron 官网 Authorized Distributors 日本目录列名。",
+        "hypothesis": "BUY：作为日本正规Micron渠道询问企业内存/存储、出口和香港/新加坡交付能力。"
+    },
+    {
+        "company": "EG Electronics AB",
+        "website": "https://egmemory.com/",
+        "country": "Sweden / UK",
+        "accountGrade": "B",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Samsung Enterprise Memory / SSD",
+        "email": "Nick.Putnam@egmemory.com",
+        "linkedin": "",
+        "role": "Memory Sales / Procurement",
+        "score": 86,
+        "priority": "B1",
+        "evidence": "Samsung Semiconductor EMEA 官方 Sales Representatives & Distributors 目录列名；业务域名聚焦memory。",
+        "hypothesis": "BUY：用Samsung 64/96GB RDIMM具体PN询证；SELL：确认其是否接收excess/BOM-change全新库存。"
+    },
+    {
+        "company": "Crestone Technology Group",
+        "website": "https://www.crestonegroup.com/",
+        "country": "United States",
+        "accountGrade": "B",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Samsung Enterprise Memory / SSD",
+        "email": "info@crestonegroup.com",
+        "linkedin": "",
+        "role": "Sales / Procurement",
+        "score": 85,
+        "priority": "B1",
+        "evidence": "Samsung Semiconductor Americas 官方 Sales Representatives & Distributors 目录列名。",
+        "hypothesis": "BUY：核验Samsung企业内存/SSD、owned/direct stock和出口能力；SELL：只在缺货事件下推进。"
+    },
+    {
+        "company": "Neptune Electronics (NEco)",
+        "website": "https://www.neccoelect.com/",
+        "country": "United States",
+        "accountGrade": "B",
+        "accountType": "Distributor",
+        "direction": "Buy-from",
+        "products": "Samsung Semiconductor / High-reliability Components",
+        "email": "info@neccoelect.com",
+        "linkedin": "",
+        "role": "Sales / Quality / Procurement",
+        "score": 79,
+        "priority": "B2",
+        "evidence": "Samsung Semiconductor Americas 官方 Sales Representatives & Distributors 目录列名。",
+        "hypothesis": "BUY：按具体Samsung PN询问服务器模组能力、MOQ、追溯与出口；不假设其持有现货。"
+    },
+    {
+        "company": "Supertron India",
+        "website": "https://www.supertronindia.com/",
+        "country": "India",
+        "accountGrade": "B",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Micron Enterprise Memory / IT Components",
+        "email": "sanjay.khushlani@supertronindia.com",
+        "linkedin": "",
+        "role": "Micron Business Manager / Purchasing",
+        "score": 80,
+        "priority": "B2",
+        "evidence": "Micron 官网 Authorized Distributors 亚洲目录列名，并提供直接业务联系人。",
+        "hypothesis": "BUY：Micron企业内存；SELL：仅在印度本地缺货或明确项目需求后推进。"
+    },
+    {
+        "company": "ASBIS Enterprises",
+        "website": "https://www.asbis.com/",
+        "country": "Cyprus / EMEA",
+        "accountGrade": "B",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Samsung / Micron / Western Digital Enterprise Components",
+        "email": "",
+        "linkedin": "https://www.linkedin.com/company/asbis",
+        "role": "Country Enterprise Storage / Components Product Manager",
+        "score": 80,
+        "priority": "B2",
+        "evidence": "Samsung与Micron官方目录均有列名；Western Digital合作另有公开厂商/公司证据。",
+        "hypothesis": "BUY/SELL均需按具体国家分支和品牌产品经理切入，禁止向集团总入口泛发。"
+    },
+    {
+        "company": "Tomen Devices Corporation",
+        "website": "https://www.tomendevices.co.jp/",
+        "country": "Japan",
+        "accountGrade": "B",
+        "accountType": "Distributor",
+        "direction": "Buy-from",
+        "products": "Samsung Semiconductor / Enterprise Memory",
+        "email": "",
+        "linkedin": "",
+        "role": "Memory Sales / Purchasing",
+        "score": 74,
+        "priority": "B2",
+        "evidence": "Samsung Semiconductor 日本 Global Network 官方目录列名。",
+        "hypothesis": "BUY：用作Samsung授权价格、交期和正规渠道基准；规模较大，不作为最快成交对象。"
+    },
+    {
+        "company": "Eastronics",
+        "website": "https://www.eastronics.com/",
+        "country": "Israel",
+        "accountGrade": "B",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Micron Enterprise RDIMM / SSD",
+        "email": "eastronics@easx.co.il",
+        "linkedin": "",
+        "role": "Micron Product Manager / Purchasing",
+        "score": 80,
+        "priority": "B3",
+        "evidence": "Micron 官网 Authorized Distributors 以色列目录列名。",
+        "hypothesis": "BUY：补充Micron企业RDIMM/SSD报价池；SELL：仅针对明确PN需求。"
+    },
+    {
+        "company": "Edge Electronics, Inc.",
+        "website": "https://www.edgeelectronics.com/",
+        "country": "United States",
+        "accountGrade": "B",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Micron Enterprise Memory / EOL-LTB",
+        "email": "sales@edgeelectronics.com",
+        "linkedin": "",
+        "role": "Micron Product Manager / Sales",
+        "score": 80,
+        "priority": "B3",
+        "evidence": "Micron 官网 Authorized Distributors Americas 目录列名。",
+        "hypothesis": "BUY：核验Micron企业模组、EOL/LTB和可追溯货；SELL：对紧缺或生命周期项目提供新货。"
+    },
+    {
+        "company": "Excelpoint Systems",
+        "website": "https://www.excelpoint.com/",
+        "country": "Singapore",
+        "accountGrade": "B",
+        "accountType": "Distributor",
+        "direction": "Buy-from",
+        "products": "Samsung DRAM / SSD / Semiconductor",
+        "email": "Patricia.ng@excelpoint.com.sg",
+        "linkedin": "",
+        "role": "Samsung Product Manager / Procurement",
+        "score": 75,
+        "priority": "B3",
+        "evidence": "Samsung Semiconductor SE & SW Asia 官方 Sales Representatives & Distributors 目录列名。",
+        "hypothesis": "BUY：作为Samsung授权报价/交期基准，先确认server DRAM而非仅嵌入式设计业务。"
+    },
+    {
+        "company": "Abacus Electric",
+        "website": "https://www.abacus.cz/",
+        "country": "Czech Republic",
+        "accountGrade": "A",
+        "accountType": "Distributor",
+        "direction": "Two-way",
+        "products": "Samsung Enterprise Memory / SSD / Server Components",
+        "email": "jp@abacus.cz",
+        "linkedin": "",
+        "role": "Component Purchasing / Samsung Product Manager",
+        "score": 86,
+        "priority": "B1",
+        "evidence": "Samsung Semiconductor EMEA 官方 Sales Representatives & Distributors 目录列名；CRM已有同名账户，本批仅补充OEM渠道证据，不重复新增。",
+        "hypothesis": "BUY：核验Samsung企业内存/SSD；SELL：结合其服务器业务询问项目缺货和BOM-change。"
+    }
+];
   const AMD_EPYC_DIRECTORY = "https://www.amd.com/en/where-to-buy/processors/epyc/sys-integrators.html";
   const researchAccountSeed = [
     { company: "Abacus Electric", website: "https://www.abacus.cz/", country: "Czech Republic", accountGrade: "A", accountType: "Server Builder", focus: true, direction: "Buy-from", evidence: "官网明确生产 white-box 服务器与存储，并经营服务器部件、内存和 SSD；AMD EPYC 官方方案商。", hypothesis: "有服务器组装、现货与项目订单，最可能出现 BOM 变更、订单未交付或全新部件余量。" },
@@ -307,6 +615,83 @@
     payload.importedResearchBatches = Array.from(new Set([...(payload.importedResearchBatches || []), RESEARCH_BATCH]));
     return newlyAdded.length;
   }
+
+  function mergeOemChannelBatch(payload) {
+    payload.appliedMigrations = payload.appliedMigrations || [];
+    if (payload.appliedMigrations.includes(OEM_CHANNEL_BATCH)) return 0;
+    const cleanUrl = (value = "") => String(value).toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
+    const cleanName = (value = "") => String(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+    const existingByUrl = new Map((payload.clients || []).filter((client) => client.website).map((client) => [cleanUrl(client.website), client]));
+    const existingByName = new Map((payload.clients || []).map((client) => [cleanName(client.company), client]));
+    const now = new Date().toISOString();
+    let added = 0;
+    oemChannelSeed.forEach((item, index) => {
+      const existing = existingByUrl.get(cleanUrl(item.website)) || existingByName.get(cleanName(item.company));
+      const source = "原厂官方授权/合作目录｜核验日 2026-08-31";
+      const verifiedEvidence = item.evidence + " 原厂目录只证明渠道关系，不证明当前持有指定PN、数量或现货。";
+      if (existing) {
+        const evidenceText = String(existing.verifiedEvidence || "");
+        if (!evidenceText.includes(item.evidence)) existing.verifiedEvidence = [evidenceText, verifiedEvidence].filter(Boolean).join("；");
+        if (!existing.commercialHypothesis) existing.commercialHypothesis = item.hypothesis;
+        if (!existing.email && item.email) existing.email = item.email;
+        if (!existing.linkedin && item.linkedin) existing.linkedin = item.linkedin;
+        existing.source = existing.source || source;
+        existing.updatedAt = now;
+        return;
+      }
+      const id = uid();
+      const client = {
+        id,
+        company: item.company,
+        website: item.website,
+        country: item.country,
+        businessRole: item.direction === "Buy-from" ? "供应商" : "双向合作",
+        products: item.products,
+        source,
+        contactName: "",
+        jobTitle: item.role,
+        email: item.email || "",
+        whatsapp: "",
+        linkedin: item.linkedin || "",
+        progressTags: [],
+        status: "已确认目标（待找联系人）",
+        trustScore: item.score,
+        followUpStage: "联系人研究",
+        lastTouchAt: "",
+        nextFollowUpAt: ["A1", "A2"].includes(item.priority) ? isoOffset(index < 4 ? 1 : 3, 10) : "",
+        nextAction: `找到${item.role}，先核验产品线/库存能力，再决定是否发送具体PN询盘`,
+        notes: `OEM渠道批次 ${OEM_CHANNEL_BATCH}｜优先级 ${item.priority}｜尚未触达`,
+        accountGrade: item.accountGrade,
+        direction: item.direction,
+        accountType: item.accountType,
+        commercialHypothesis: item.hypothesis,
+        verifiedEvidence,
+        owner: "Jenna",
+        researchBatch: OEM_CHANNEL_BATCH,
+        createdAt: now,
+        updatedAt: now,
+      };
+      payload.clients.push(client);
+      existingByUrl.set(cleanUrl(client.website), client);
+      existingByName.set(cleanName(client.company), client);
+      if (["A1", "A2"].includes(item.priority)) {
+        payload.tasks.push({
+          id: uid(),
+          clientId: id,
+          title: client.nextAction,
+          dueAt: client.nextFollowUpAt,
+          priority: "高",
+          stage: "联系人研究",
+          completed: false,
+          researchBatch: OEM_CHANNEL_BATCH,
+        });
+      }
+      added += 1;
+    });
+    payload.appliedMigrations.push(OEM_CHANNEL_BATCH);
+    return added;
+  }
+
   function normalizeData(payload) {
     payload.version = 5;
     payload.clients = (payload.clients || []).map((c) => ({
@@ -369,6 +754,7 @@
       if (client.progressTags.length) client.status = derivedStatus(client.progressTags, client.status);
     });
     mergeResearchBatch(payload);
+    mergeOemChannelBatch(payload);
     payload.appliedMigrations = payload.appliedMigrations || [];
     if (!payload.appliedMigrations.includes(ALL_CLIENTS_TOUCHED_MIGRATION)) {
       payload.clients.forEach((client) => {
