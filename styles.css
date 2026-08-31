@@ -341,7 +341,7 @@ tr.clickable:hover td { background: #f8fbff; }
 .mini-item { padding: 11px 12px; border: 1px solid #e6e5e2; border-radius: 8px; background: white; font-size: 11px; line-height: 1.55; }
 .mini-item strong { display: block; margin-bottom: 3px; color: var(--navy); }
 
-.modal-backdrop { display: grid; place-items: center; padding: 20px; }
+.modal-backdrop { z-index: 80; display: grid; place-items: center; padding: 20px; }
 .modal {
   width: min(720px, 96vw); max-height: 92vh; overflow: auto; padding: 26px;
   border: 1px solid #e3e2df; border-radius: 14px; background: #fbfaf7; box-shadow: 0 25px 70px rgba(12, 31, 66, .24);
