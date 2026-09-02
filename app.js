@@ -856,7 +856,7 @@
       const id = uid();
       const nextFollowUpAt = ["A1", "A2"].includes(item.priority) ? isoOffset(index < 4 ? 0 : 1, 10 + (index % 3), index % 2 ? 30 : 0) : "";
       const nextAction = ["A1", "A2"].includes(item.priority)
-        ? "定位采购/供应链负责人；询问全新 Samsung DDR5 128GB 5600/6400 RDIMM（可接受部分数量），并确认 PN、数量、价格、交期和库存地"
+        ? "定位采购/供应链负责人；询问全新 Samsung DDR5 128GB 5600/6400 RDIMM（总需求 15,000pcs，可接受部分数量），并确认 PN、数量、价格、交期和库存地"
         : "先确认是否自持高容量 DDR5 RDIMM 或项目释放库存；有真实供给后再索取 PN、数量、价格、货况和库存地";
       const client = {
         id,
