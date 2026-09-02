@@ -52,6 +52,7 @@
   const ALL_CLIENTS_TOUCHED_MIGRATION = "2026-08-31-all-clients-touched";
 
   const OEM_CHANNEL_BATCH = "2026-08-31-oem-authorized-channel-19";
+  const NICHE_COUNTRY_BATCH = "2026-09-02-niche-country-rdimm-9";
   const oemChannelSeed = [
     {
         "company": "MEMPHIS Electronic",
@@ -358,6 +359,143 @@
         "hypothesis": "BUY：核验Samsung企业内存/SSD；SELL：结合其服务器业务询问项目缺货和BOM-change。"
     }
 ];
+  const nicheCountrySeed = [
+    {
+      company: "Maguay Computers",
+      website: "https://www.maguay.ro/",
+      country: "Romania",
+      accountGrade: "A",
+      accountType: "Server Builder",
+      direction: "Buy-from",
+      products: "Samsung / SK hynix / Micron 64GB, 96GB, 128GB DDR5 RDIMM; AI/HPC servers",
+      email: "office@maguay.ro",
+      role: "Purchasing / Supply Chain / Server Product Manager",
+      score: 91,
+      priority: "A1",
+      evidence: "Intel Partner Showcase confirms Maguay builds AI/HPC and data-center systems plus its own servers/storage; official site and contact page verify the company domain and office email. Sources: https://www.intel.com/content/www/us/en/partner/showcase/storefront/a5S3b0000016NifEAE/maguay-computers-srl.html | https://www.maguay.ro/contact",
+      hypothesis: "Own-brand server and HPC project configurations can create new/unused RDIMM from BOM changes, cancelled deployments, spare allocation or configuration updates.",
+    },
+    {
+      company: "XENYA d.o.o.",
+      website: "https://xenya.si/",
+      country: "Slovenia",
+      accountGrade: "A",
+      accountType: "HPC / AI Infrastructure",
+      direction: "Buy-from",
+      products: "Supermicro / NVIDIA data-center systems; high-capacity DDR5 RDIMM; storage",
+      email: "sales@xenya.si",
+      role: "Server Sales / Product / Procurement",
+      score: 91,
+      priority: "A1",
+      evidence: "XENYA's official 2025 Data Center Industry page states it represents Supermicro and NVIDIA in Slovenia and publishes a company-domain sales email. Sources: https://xenya.si/xenya-at-the-data-center-industry-2025-conference/ | https://xenya.si/about-us/",
+      hypothesis: "Supermicro and NVIDIA project supply creates a credible path to high-capacity server memory, project spares and released configuration stock.",
+    },
+    {
+      company: "ETA2U",
+      website: "https://www.eta2u.ro/",
+      country: "Romania",
+      accountGrade: "A",
+      accountType: "HPC / AI Infrastructure",
+      direction: "Buy-from",
+      products: "HPC systems, data-center integration, servers, storage, DDR5 RDIMM",
+      email: "office@eta2u.ro",
+      role: "HPC / Infrastructure Procurement / Supply Chain",
+      score: 89,
+      priority: "A1",
+      evidence: "ETA2U's official site describes 30+ years in complex IT integration, 1,000+ active clients and 32 strategic partners; IBM verifies it as an SI/MSP/VAR. Sources: https://www.eta2u.ro/ | https://www.ibm.com/partnerplus/directory/company/3537 | https://www.eta2u.ro/contact",
+      hypothesis: "HPC and end-to-end data-center projects can generate unused RDIMM through project-specific BOM changes, spare stock or delayed/cancelled deployments.",
+    },
+    {
+      company: "Kontrax JSC",
+      website: "https://kontrax.bg/en/",
+      country: "Bulgaria",
+      accountGrade: "A",
+      accountType: "SI",
+      direction: "Buy-from",
+      products: "Dell / Fujitsu / Lenovo servers, PowerEdge HPC/AI, storage, DDR5 RDIMM",
+      email: "office@kontrax.bg",
+      role: "Data Center Solutions / Procurement / Product Manager",
+      score: 88,
+      priority: "A1",
+      evidence: "Kontrax's official data-center page lists Dell, Fujitsu and Lenovo server solutions including PowerEdge HPC/AI systems; its official contact page verifies the company email and Sofia address. Sources: https://kontrax.bg/en/resheniya/czentrove-za-danni/data-center-equipment-and-system-software/ | https://kontrax.bg/en/contacts/",
+      hypothesis: "Multi-vendor server projects can create customer-specific spare memory, cancelled-order stock or configuration-change inventory.",
+    },
+    {
+      company: "CNsys Plc",
+      website: "https://cnsys.bg/en/",
+      country: "Bulgaria",
+      accountGrade: "A",
+      accountType: "SI",
+      direction: "Buy-from",
+      products: "Data-center systems, hyperconverged infrastructure, servers, storage, DDR5 RDIMM",
+      email: "sales@cnsys.bg",
+      role: "Data Center Solutions / Purchasing / Supply Chain",
+      score: 86,
+      priority: "A2",
+      evidence: "CNsys states it is a direct Platinum/Gold partner able to design and supply data-center products in Bulgaria; its official contact page publishes a sales inbox and national office network. Sources: https://cnsys.bg/en/data-center-solutions/ | https://cnsys.bg/en/contact-us/",
+      hypothesis: "Direct project supply and a national service footprint make project spares, replacement stock and unused configuration inventory plausible.",
+    },
+    {
+      company: "M SAN Grupa",
+      website: "https://www.msan.hr/en/",
+      country: "Croatia",
+      accountGrade: "B",
+      accountType: "Distributor",
+      direction: "Buy-from",
+      products: "Enterprise VAD, servers, storage, data-center products, high-capacity DDR5 RDIMM",
+      email: "",
+      role: "Enterprise VAD / Product Manager / Procurement",
+      score: 85,
+      priority: "B1",
+      evidence: "M SAN's official pages describe an enterprise VAD business, 6,100+ partners, 200,000 products delivered monthly and a 56,347 m2 logistics footprint with customs warehousing. Sources: https://www.msan.hr/enterprise/ | https://www.msan.hr/en/distribution/ | https://www.msan.hr/en/the-company/",
+      hypothesis: "Regional VAD inventory and customs warehousing may yield channel stock, allocation changes or project returns, but server-memory ownership must be verified before treating it as supply.",
+    },
+    {
+      company: "Arctur d.o.o.",
+      website: "https://www.arctur.si/en/",
+      country: "Slovenia",
+      accountGrade: "B",
+      accountType: "HPC / AI Infrastructure",
+      direction: "Buy-from",
+      products: "Private HPC / cloud infrastructure; high-memory compute nodes; enterprise storage",
+      email: "info@arctur.si",
+      role: "Data Center Operations / Infrastructure / Procurement",
+      score: 84,
+      priority: "B1",
+      evidence: "The European Monitor of Industrial Ecosystems documents Arctur's HPC/cloud infrastructure with up to 1TB memory per node, NVIDIA Tesla GPUs and 1.5PB storage; official sources verify its domain and contact channel. Sources: https://monitor-industrial-ecosystems.ec.europa.eu/technology-centre/arctur-doo-0 | https://www.arctur.si/en/news/arctur-opened-its-data-centre-doors/",
+      hypothesis: "A privately operated HPC environment can generate unused spares or refresh stock, although it is more likely to be an end user than a recurring distributor.",
+    },
+    {
+      company: "COMING Computer Engineering",
+      website: "https://coming.rs/en/home/",
+      country: "Serbia",
+      accountGrade: "B",
+      accountType: "Cloud / Hosting",
+      direction: "Buy-from",
+      products: "Cloud infrastructure, enterprise servers, backup / DR, DDR5 RDIMM",
+      email: "office@coming.rs",
+      role: "Infrastructure Operations / Procurement / Hardware",
+      score: 82,
+      priority: "B2",
+      evidence: "COMING's official site verifies its enterprise IT systems business, vendor partnerships, Belgrade office and company-domain email; its LinkedIn company page identifies it as a Serbian cloud provider operating since 2009. Sources: https://coming.rs/en/home/ | https://rs.linkedin.com/company/coming---computer-engineering",
+      hypothesis: "Cloud infrastructure and managed IT projects can create spare or refresh inventory, but new/unused condition and ownership need early confirmation.",
+    },
+    {
+      company: "NewCytech Business Solutions",
+      website: "https://newcytech.logicom.net/",
+      country: "Cyprus",
+      accountGrade: "B",
+      accountType: "SI",
+      direction: "Buy-from",
+      products: "Enterprise infrastructure solutions, servers, storage, data-center hardware",
+      email: "newcytech@newcytech.com",
+      role: "Infrastructure Solutions / Procurement / Product",
+      score: 82,
+      priority: "B2",
+      evidence: "IBM's partner directory verifies NewCytech as a Cyprus business technology company within Logicom Group; its official contact page verifies the Nicosia entity, phone and company email. Sources: https://www.ibm.com/partnerplus/directory/company/6015 | https://newcytech.logicom.net/contact-us/",
+      hypothesis: "Enterprise infrastructure projects inside a regional distribution group may create BOM-change or released project stock; exact memory capability remains unverified.",
+    },
+  ];
   const AMD_EPYC_DIRECTORY = "https://www.amd.com/en/where-to-buy/processors/epyc/sys-integrators.html";
   const researchAccountSeed = [
     { company: "Abacus Electric", website: "https://www.abacus.cz/", country: "Czech Republic", accountGrade: "A", accountType: "Server Builder", focus: true, direction: "Buy-from", evidence: "官网明确生产 white-box 服务器与存储，并经营服务器部件、内存和 SSD；AMD EPYC 官方方案商。", hypothesis: "有服务器组装、现货与项目订单，最可能出现 BOM 变更、订单未交付或全新部件余量。" },
@@ -692,6 +830,87 @@
     return added;
   }
 
+  function mergeNicheCountryBatch(payload) {
+    payload.appliedMigrations = payload.appliedMigrations || [];
+    if (payload.appliedMigrations.includes(NICHE_COUNTRY_BATCH)) return 0;
+    const cleanUrl = (value = "") => String(value).toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
+    const cleanName = (value = "") => String(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+    const existingByUrl = new Map((payload.clients || []).filter((client) => client.website).map((client) => [cleanUrl(client.website), client]));
+    const existingByName = new Map((payload.clients || []).map((client) => [cleanName(client.company), client]));
+    const now = new Date().toISOString();
+    let added = 0;
+
+    nicheCountrySeed.forEach((item, index) => {
+      const existing = existingByUrl.get(cleanUrl(item.website)) || existingByName.get(cleanName(item.company));
+      const verifiedEvidence = `${item.evidence} Verification date: 2026-09-02. Public-company evidence does not prove current ownership of a specified PN or physical stock.`;
+      if (existing) {
+        const evidenceText = String(existing.verifiedEvidence || "");
+        if (!evidenceText.includes("Verification date: 2026-09-02")) existing.verifiedEvidence = [evidenceText, verifiedEvidence].filter(Boolean).join("；");
+        if (!existing.commercialHypothesis) existing.commercialHypothesis = item.hypothesis;
+        if (!existing.email && item.email) existing.email = item.email;
+        if (!existing.jobTitle) existing.jobTitle = item.role;
+        existing.updatedAt = now;
+        return;
+      }
+
+      const id = uid();
+      const nextFollowUpAt = ["A1", "A2"].includes(item.priority) ? isoOffset(index < 4 ? 0 : 1, 10 + (index % 3), index % 2 ? 30 : 0) : "";
+      const nextAction = ["A1", "A2"].includes(item.priority)
+        ? "定位采购/供应链负责人；询问全新 Samsung DDR5 128GB 5600/6400 RDIMM（可接受部分数量），并确认 PN、数量、价格、交期和库存地"
+        : "先确认是否自持高容量 DDR5 RDIMM 或项目释放库存；有真实供给后再索取 PN、数量、价格、货况和库存地";
+      const client = {
+        id,
+        company: item.company,
+        website: item.website,
+        country: item.country,
+        businessRole: item.direction === "Buy-from" ? "供应商" : "双向合作",
+        products: item.products,
+        source: "小众国家服务器/HPC专项研究｜官网及官方合作伙伴目录",
+        contactName: "",
+        jobTitle: item.role,
+        email: item.email || "",
+        whatsapp: "",
+        linkedin: "",
+        progressTags: [],
+        status: "已确认目标（待找联系人）",
+        trustScore: item.score,
+        followUpStage: "联系人研究",
+        lastTouchAt: "",
+        nextFollowUpAt,
+        nextAction,
+        notes: `小众国家专项 ${NICHE_COUNTRY_BATCH}｜优先级 ${item.priority}｜尚未触达｜首轮用英文；不把官网产品能力当成现货。`,
+        accountGrade: item.accountGrade,
+        direction: item.direction,
+        accountType: item.accountType,
+        commercialHypothesis: item.hypothesis,
+        verifiedEvidence,
+        owner: "Jenna",
+        researchBatch: NICHE_COUNTRY_BATCH,
+        createdAt: now,
+        updatedAt: now,
+      };
+      payload.clients.push(client);
+      existingByUrl.set(cleanUrl(client.website), client);
+      existingByName.set(cleanName(client.company), client);
+      if (["A1", "A2"].includes(item.priority)) {
+        payload.tasks.push({
+          id: uid(),
+          clientId: id,
+          title: nextAction,
+          dueAt: nextFollowUpAt,
+          priority: "高",
+          stage: "联系人研究",
+          completed: false,
+          researchBatch: NICHE_COUNTRY_BATCH,
+        });
+      }
+      added += 1;
+    });
+
+    payload.appliedMigrations.push(NICHE_COUNTRY_BATCH);
+    return added;
+  }
+
   function normalizeData(payload) {
     payload.version = 5;
     payload.clients = (payload.clients || []).map((c) => ({
@@ -767,6 +986,7 @@
       });
       payload.appliedMigrations.push(ALL_CLIENTS_TOUCHED_MIGRATION);
     }
+    mergeNicheCountryBatch(payload);
     return payload;
   }
 
