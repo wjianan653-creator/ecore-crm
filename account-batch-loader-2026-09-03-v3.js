@@ -6,6 +6,8 @@
   const COUNTRY_KEY = "ecore-country-filter-v3";
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const norm = (v = "") => String(v).toLowerCase().replace(/[^a-z0-9]/g, "");
+  let importStarted = false;
+  let autoAttempted = false;
 
   function toast(text, error = false) {
     document.getElementById("ecore-v3-toast")?.remove();
@@ -84,6 +86,8 @@
   }
 
   async function importBatch(button) {
+    if (importStarted) return;
+    importStarted = true;
     if (button) {
       button.disabled = true;
       button.textContent = "正在导入…";
@@ -114,6 +118,7 @@
       toast(`导入完成：新增 ${added} 家，自动跳过 ${skipped} 个已有账户。`);
       if (button) button.textContent = `已导入：+${added} / 跳过${skipped}`;
     } catch (err) {
+      importStarted = false;
       toast(`导入没有完成：${err.message || err}`, true);
       if (button) {
         button.disabled = false;
@@ -205,9 +210,17 @@
     host.appendChild(button);
   }
 
+  function maybeAutoImport() {
+    if (autoAttempted || importStarted || localStorage.getItem(BATCH_KEY)) return;
+    if (!document.querySelector('[data-view="clients"]')) return;
+    autoAttempted = true;
+    setTimeout(() => importBatch(document.getElementById("import-accounts-20260903-v3")), 700);
+  }
+
   function run() {
     addImportButton();
     enhanceCountry();
+    maybeAutoImport();
   }
 
   const observer = new MutationObserver(run);
