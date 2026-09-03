@@ -176,7 +176,11 @@
       toolbar.insertBefore(select, toolbar.querySelector("#client-grade"));
     }
     const saved = localStorage.getItem(COUNTRY_KEY) || "全部";
-    select.innerHTML = `<option value="全部">全部国家</option>${countries.map((c) => `<option value="${c}">${c}</option>`).join("")}`;
+    const countrySignature = countries.join("|");
+    if (select.dataset.countryOptions !== countrySignature) {
+      select.innerHTML = `<option value="全部">全部国家</option>${countries.map((c) => `<option value="${c}">${c}</option>`).join("")}`;
+      select.dataset.countryOptions = countrySignature;
+    }
     select.value = [...select.options].some((o) => o.value === saved) ? saved : "全部";
     applyCountryFilter();
 
