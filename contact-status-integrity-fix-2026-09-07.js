@@ -3,7 +3,6 @@
 
   const STORAGE_KEY = "ecore-crm-secure-v1";
   const SESSION_KEY = "ecore-crm-session-key";
-  const RULE_CUTOFF = Date.parse("2026-09-07T00:00:00+08:00");
   const FALSE_PENDING = new Set(["linkedin_pending", "email_pending", "whatsapp_pending"]);
   const FALSE_YELLOW_STATUS = new Set([
     "LinkedIn申请已发送（等待通过）",
@@ -20,6 +19,7 @@
   let cachedSalt = "";
   let quietTimer = null;
   let initialScheduled = false;
+  let repairing = false;
 
   function bytesToBase64(bytes) {
     let binary = "";
@@ -82,16 +82,21 @@
     return (payload.activities || []).some((activity) => Number(activity.clientId) === Number(clientId));
   }
 
-  function isCoveredClient(client) {
-    const createdAt = Date.parse(client.createdAt || "");
-    if (Number.isFinite(createdAt) && createdAt >= RULE_CUTOFF) return true;
-    return String(client.notes || "").includes("2026-09-07 DDR5-5600 sourcing pool");
+  function isUntouchedImportedResearch(client) {
+    const notes = String(client.notes || "").toLowerCase();
+    const evidence = String(client.verifiedEvidence || "").toLowerCase();
+    return (
+      notes.includes("尚未触达") ||
+      notes.includes("sourcing pool") ||
+      notes.includes("research pool") ||
+      evidence.includes("researched sourcing candidate")
+    );
   }
 
   function repairPayload(payload) {
     let changed = 0;
     (payload.clients || []).forEach((client) => {
-      if (!isCoveredClient(client) || hasRealActivity(payload, client.id)) return;
+      if (!isUntouchedImportedResearch(client) || hasRealActivity(payload, client.id)) return;
 
       const oldTags = Array.isArray(client.progressTags) ? client.progressTags : [];
       const nextTags = oldTags.filter((tag) => !FALSE_PENDING.has(tag));
@@ -114,10 +119,12 @@
   }
 
   async function repairNow() {
+    if (repairing) return;
     const password = sessionStorage.getItem(SESSION_KEY);
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!password || !raw) return;
 
+    repairing = true;
     try {
       const record = JSON.parse(raw);
       if (!record?.salt || !record?.iv || !record?.data) return;
@@ -134,13 +141,15 @@
       localStorage.setItem(STORAGE_KEY, nextRaw);
       lastRaw = nextRaw;
       sessionStorage.setItem("ecore-contact-integrity-fixed-at", new Date().toISOString());
-      setTimeout(() => location.reload(), 120);
+      setTimeout(() => location.reload(), 80);
     } catch (error) {
       console.warn("ECORE contact/status integrity repair skipped:", error);
+    } finally {
+      repairing = false;
     }
   }
 
-  function scheduleRepair(delay = 2500) {
+  function scheduleRepair(delay = 250) {
     clearTimeout(quietTimer);
     quietTimer = setTimeout(repairNow, delay);
   }
@@ -151,12 +160,12 @@
 
     if (password && !initialScheduled) {
       initialScheduled = true;
-      scheduleRepair(1800);
+      scheduleRepair(250);
     }
 
     if (raw !== lastRaw) {
       lastRaw = raw;
-      scheduleRepair(2500);
+      scheduleRepair(250);
     }
 
     if (!password) {
@@ -165,5 +174,5 @@
       lastPassword = "";
       cachedSalt = "";
     }
-  }, 300);
+  }, 150);
 })();
