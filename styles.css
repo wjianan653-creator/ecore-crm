@@ -334,6 +334,15 @@ tr.clickable:hover td { background: #f8fbff; }
 .detail-card p { margin: 0; color: var(--text); font-size: 12px; line-height: 1.55; word-break: break-word; }
 .detail-wide { grid-column: 1 / -1; }
 .drawer-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.key-account-pill {
+  display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border: 1px solid #f0c96b; border-radius: 999px;
+  color: #865400; background: #fff5cf; font-size: 9px; font-weight: 850; white-space: nowrap;
+}
+.key-account-empty { color: #b2bac7; }
+.key-account-field { align-content: center; padding: 10px 12px; border: 1px solid #d7dee9; border-radius: 8px; background: #fffaf0; }
+.key-account-field label { display: flex; align-items: center; gap: 8px; color: #865400; font-size: 11px; cursor: pointer; }
+.key-account-field input { width: 16px; min-height: 16px; height: 16px; margin: 0; accent-color: #d59a19; }
+.key-account-field small { color: #8b96a8; font-size: 9px; line-height: 1.45; }
 .drawer-badges .progress-pills { min-width: 0; }
 .drawer-section { margin-top: 24px; }
 .drawer-section h3 { margin: 0 0 12px; font-size: 15px; }
