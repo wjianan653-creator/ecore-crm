@@ -54,7 +54,7 @@
 
   const OEM_CHANNEL_BATCH = "2026-08-31-oem-authorized-channel-19";
   const NICHE_COUNTRY_BATCH = "2026-09-02-niche-country-rdimm-9";
-  const MEMORY_NICHE_BATCH = "2026-09-16-memory-niche-market-11-v1";
+  const MEMORY_NICHE_BATCH = "2026-09-16-memory-niche-market-11-v2";
   const oemChannelSeed = [
     {
         "company": "MEMPHIS Electronic",
@@ -1075,7 +1075,7 @@
   }
 
   function normalizeData(payload) {
-    payload.version = 6;
+    payload.version = 7;
     payload.clients = (payload.clients || []).map((c) => ({
       ...c,
       status: oldStatusMap[c.status] || c.status || "待筛选",
@@ -1085,6 +1085,7 @@
       commercialHypothesis: c.commercialHypothesis || c.notes || "",
       verifiedEvidence: c.verifiedEvidence || "",
       keyAccount: typeof c.keyAccount === "boolean" ? c.keyAccount : (c.accountGrade || (Number(c.trustScore || 0) >= 85 ? "A" : Number(c.trustScore || 0) >= 65 ? "B" : "C")) === "A",
+      createdAt: c.createdAt || "",
       owner: "Jenna",
     }));
     payload.tasks = payload.tasks || [];
@@ -1409,7 +1410,7 @@
         && (clientGrade === "全部" || c.accountGrade === clientGrade)
         && (clientDirection === "全部" || c.direction === clientDirection)
         && (clientKeyAccount === "全部" || (clientKeyAccount === "重点客户" ? c.keyAccount : !c.keyAccount));
-    });
+    }).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     return `${top("账户库", "账户分级、沟通进展与下一步动作")}
       <div class="progress-legend" aria-label="客户颜色说明">
         <span><i class="legend-outreach"></i>浅黄色：已发送，等待通过 / 回复</span>
@@ -1422,11 +1423,11 @@
         <select id="client-direction"><option>全部</option>${directions.map((d) => `<option ${d === clientDirection ? "selected" : ""}>${d}</option>`).join("")}</select>
         <select id="client-status"><option>全部</option><optgroup label="触达与回复">${progressOptions.map((option) => `<option value="${option.value}" ${option.value === clientStatus ? "selected" : ""}>${option.label}</option>`).join("")}</optgroup><optgroup label="后续阶段">${["待筛选", "已确认目标（待找联系人）", "资料核验中", "价格评估中", "商务谈判中", "已成交", "培育", "已关闭"].map((s) => `<option ${s === clientStatus ? "selected" : ""}>${s}</option>`).join("")}</optgroup></select>
       </div>
-      <div class="table-wrap account-table"><table><thead><tr><th>账户</th><th>重点客户</th><th>等级 / 类型</th><th>业务方向</th><th>联系人 / 渠道</th><th>具体机会阶段</th><th>最近沟通</th><th>下次跟进</th><th>下一步</th></tr></thead>
+      <div class="table-wrap account-table"><table><thead><tr><th>账户</th><th>重点客户</th><th>添加日期</th><th>等级 / 类型</th><th>业务方向</th><th>联系人 / 渠道</th><th>具体机会阶段</th><th>最近沟通</th><th>下次跟进</th><th>下一步</th></tr></thead>
       <tbody>${rows.map((c) => {
         const latest = latestClientActivity(c.id);
         const activityCount = clientActivities(c.id).length;
-        return `<tr class="clickable account-progress-${accountProgressState(c)}" data-client="${c.id}"><td><div class="company-cell"><strong>${escapeHtml(c.company)}</strong><small>${escapeHtml(c.country || "待补充")} · ${escapeHtml(c.website)}</small></div></td><td>${keyAccountPill(c.keyAccount)}</td><td>${gradePill(c.accountGrade)}<br><small>${escapeHtml(c.accountType)}</small></td><td><strong>${escapeHtml(directionLabel(c.direction))}</strong><br><small>${escapeHtml(c.products || "待补充")}</small></td><td><div class="contact-cell">${contactSummary(c)}</div></td><td>${progressPills(c)}</td><td>${activitySummary(latest, activityCount)}</td><td>${fmt(c.nextFollowUpAt)}</td><td class="next-action-cell">${escapeHtml(c.nextAction || "未设置")}</td></tr>`;
+        return `<tr class="clickable account-progress-${accountProgressState(c)}" data-client="${c.id}"><td><div class="company-cell"><strong>${escapeHtml(c.company)}</strong><small>${escapeHtml(c.country || "待补充")} · ${escapeHtml(c.website)}</small></div></td><td>${keyAccountPill(c.keyAccount)}</td><td><time>${c.createdAt ? escapeHtml(dateKey(c.createdAt)) : "未记录"}</time></td><td>${gradePill(c.accountGrade)}<br><small>${escapeHtml(c.accountType)}</small></td><td><strong>${escapeHtml(directionLabel(c.direction))}</strong><br><small>${escapeHtml(c.products || "待补充")}</small></td><td><div class="contact-cell">${contactSummary(c)}</div></td><td>${progressPills(c)}</td><td>${activitySummary(latest, activityCount)}</td><td>${fmt(c.nextFollowUpAt)}</td><td class="next-action-cell">${escapeHtml(c.nextAction || "未设置")}</td></tr>`;
       }).join("")}</tbody></table>
       ${rows.length ? "" : `<div class="empty">没有符合条件的客户</div>`}</div>`;
   }
