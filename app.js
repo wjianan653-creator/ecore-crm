@@ -18,6 +18,7 @@
   let clientStatus = "全部";
   let clientGrade = "全部";
   let clientDirection = "全部";
+  let clientKeyAccount = "全部";
   let quickDraft = { company: "", website: "" };
 
   const navItems = [
@@ -53,6 +54,7 @@
 
   const OEM_CHANNEL_BATCH = "2026-08-31-oem-authorized-channel-19";
   const NICHE_COUNTRY_BATCH = "2026-09-02-niche-country-rdimm-9";
+  const MEMORY_NICHE_BATCH = "2026-09-16-memory-niche-market-11-v1";
   const oemChannelSeed = [
     {
         "company": "MEMPHIS Electronic",
@@ -496,6 +498,96 @@
       hypothesis: "Enterprise infrastructure projects inside a regional distribution group may create BOM-change or released project stock; exact memory capability remains unverified.",
     },
   ];
+  const memoryNicheSeed = [
+    {
+      company: "SuperMikro d.o.o.", website: "https://supermikro.rs/", country: "Serbia", accountGrade: "A", keyAccount: true,
+      accountType: "Server Builder", direction: "Two-way", products: "Supermicro servers, components, AI/HPC, storage, GPU servers",
+      contactName: "Sales / Procurement Team", role: "Sales / Procurement / General Management", email: "office@supermikro.rs", priority: "A1", score: 92,
+      nextAction: "先问64GB DDR5 5600/6400、18–30TB enterprise HDD、server CPU / high-capacity SSD当前项目缺料；有互动后再挖全新excess/project stock",
+      evidence: "20+年Supermicro合作；AI/VR/IoT/storage/GPU server；公开称拥有大量barebone、server equipment与components库存。来源：https://supermikro.rs/；https://supermikro.rs/about.html",
+      hypothesis: "SELL优先 / BOTH：区域级Supermicro集成商，公开称拥有较大服务器与组件库存。",
+    },
+    {
+      company: "Xenya d.o.o.", website: "https://xenya.si/", country: "Slovenia", accountGrade: "A", keyAccount: true,
+      accountType: "HPC / AI Infrastructure", direction: "Two-way", products: "Supermicro / NVIDIA systems, DDR5 RDIMM, enterprise SSD/HDD, HPC",
+      contactName: "Dejan Šavija", role: "Commercial / Server Hardware Contact", email: "dejan.savija@xenya.si", priority: "A1", score: 92,
+      nextAction: "结合其Supermicro配置与市场涨价内容，确认64GB DDR5-6400、enterprise SSD/HDD当前sourcing gap",
+      evidence: "公开SuperServer配置含16x64GB DDR5-6400 ECC RDIMM、PM9A3 U.2、ConnectX-7。来源：https://xenya.si/；https://si.linkedin.com/in/dejan-%C5%A1avija-75049227",
+      hypothesis: "SELL优先 / BOTH：Supermicro、NVIDIA与HPC集成业务真实，联系人公开活跃。",
+    },
+    {
+      company: "Mlacom d.o.o.", website: "https://www.mlacom.si/", country: "Slovenia", accountGrade: "A", keyAccount: true,
+      accountType: "Server Builder", direction: "Two-way", products: "Servers, high-end workstations, custom builds, Supermicro",
+      contactName: "Jaka Mlakar", role: "Management / Sales", email: "info@mlacom.si", priority: "A2", score: 87,
+      nextAction: "先验证server build中DDR5 RDIMM、enterprise SSD、CPU的当前采购需求；第二层再问BOM变化或项目余料",
+      evidence: "1989年至今；核心业务含servers、high-end workstations、custom builds；公开称持Supermicro distribution。来源：https://www.mlacom.si/；https://www.linkedin.com/company/mlacom-d-o-o",
+      hypothesis: "SELL优先 / BOTH：小型家族经营，服务器和定制工作站BOM与ECORE产品匹配。",
+    },
+    {
+      company: "CRATIS d.o.o.", website: "https://www.cratis.hr/", country: "Croatia", accountGrade: "B", keyAccount: false,
+      accountType: "SI", direction: "Two-way", products: "Cloud, data center, systems integration, dedicated servers, SAN/NAS",
+      contactName: "Darko Pintarić", role: "President of the Management Board", email: "sales@cratis.hr", priority: "B1", score: 82,
+      nextAction: "先问dedicated server / storage部署中是否有hard-to-source DDR5、enterprise storage或server CPU；若直接持货再挖项目余货",
+      evidence: "曾建设Croatia大型数据中心DC NORTH；当前做managed cloud、systems integration、dedicated servers与SAN/NAS。来源：https://www.cratis.hr/en/contact/?ignore_lang_detect=1",
+      hypothesis: "SELL优先 / BOTH：具备云、数据中心和系统集成业务，但硬件直接采购权仍需验证。",
+    },
+    {
+      company: "Wallfuture", website: "https://www.wallfuture.com/", country: "Portugal", accountGrade: "A", keyAccount: true,
+      accountType: "Server Builder", direction: "Two-way", products: "Supermicro servers, storage, custom equipment",
+      contactName: "Commercial Team", role: "Commercial / Supermicro Integration", email: "consultacomercial@wallfuture.com", priority: "A1", score: 91,
+      nextAction: "直接围绕Supermicro项目问64GB DDR5 5600/6400、enterprise SSD/HDD和server CPU当前缺料；后续再挖new excess stock",
+      evidence: "公开称Supermicro Gold Partner，主营servers、storage与custom equipment。来源：https://www.wallfuture.com/；https://www.wallfuture.com/contactos/",
+      hypothesis: "SELL优先 / BOTH：小团队、Supermicro Gold Partner，业务匹配且可直接触达。",
+    },
+    {
+      company: "Malogica Systems", website: "https://malogica.systems/", country: "Portugal", accountGrade: "A", keyAccount: true,
+      accountType: "HPC / AI Infrastructure", direction: "Two-way", products: "Custom HPC, AI inference servers, storage, on-prem AI",
+      contactName: "Marco Spínola / Pedro Brazão", role: "Management / HPC Server Team", email: "", priority: "A1", score: 89,
+      nextAction: "先问DDR5 RDIMM、server CPU、高容量enterprise SSD当前项目缺料；有互动再谈BOM surplus / cancelled build stock",
+      evidence: "Funchal/Madeira；主营HPC Server、Inference Server、On-Prem AI、Storage。来源：https://malogica.systems/；https://malogica.systems/contact-us",
+      hypothesis: "SELL优先 / BOTH：custom-built HPC / AI / storage形成真实server BOM。",
+    },
+    {
+      company: "Infordelta", website: "https://www.infordelta.pt/", country: "Portugal", accountGrade: "A", keyAccount: true,
+      accountType: "SI", direction: "Two-way", products: "HPE servers, storage, enterprise infrastructure",
+      contactName: "Commercial / Infrastructure Team", role: "HPE Server & Storage", email: "geral@infordelta.pt", priority: "A2", score: 86,
+      nextAction: "先问HPE server/storage项目对DDR5 RDIMM、enterprise SSD/HDD的补货或急单需求；有回复再评估项目余货",
+      evidence: "1989年至今；自2005年为HP/HPE server、storage等Service Provider。来源：https://www.infordelta.pt/Home.aspx；https://www.infordelta.pt/Infordelta.aspx",
+      hypothesis: "SELL优先 / BOTH：HPE服务器和存储服务商，具备本地B2B与仓储能力。",
+    },
+    {
+      company: "SYSTEEX HPC", website: "https://systeex.cl/", country: "Chile", accountGrade: "A", keyAccount: true,
+      accountType: "HPC / AI Infrastructure", direction: "Two-way", products: "Supermicro HPC, Intel/AMD servers, storage servers, GPU servers",
+      contactName: "HPC Sales / Owner", role: "Supermicro / HPC Sales", email: "systeex@systeex.cl", priority: "A1", score: 91,
+      nextAction: "先问当前Supermicro/HPC项目里DDR5 RDIMM、18–30TB HDD、server CPU / storage的具体缺料",
+      evidence: "官网明确为Supermicro Chile授权渠道，销售Intel/AMD CPU servers、storage servers、GPU servers与workstations。来源：https://systeex.cl/index.html",
+      hypothesis: "SELL优先 / BOTH：小型Supermicro渠道，服务器/HPC匹配度高且可直接触达。",
+    },
+    {
+      company: "SIASA Chile", website: "https://siasa.cl/", country: "Chile", accountGrade: "A", keyAccount: true,
+      accountType: "HPC / AI Infrastructure", direction: "Two-way", products: "ARM servers, Supermicro AI/HPC/cloud/storage",
+      contactName: "Chile Commercial / Presales Team", role: "Datacenter / HPC / Server Sales", email: "info@siasa.cl", priority: "A1", score: 89,
+      nextAction: "优先问64GB DDR5、server CPU和enterprise storage在当前datacenter/HPC项目中的sourcing gap；后续再挖项目overstock",
+      evidence: "自研ARM server；覆盖Supermicro AI/HPC/cloud/storage；公开称服务1000+区域客户。来源：https://siasa.cl/；https://siasa.cl/soluciones.html",
+      hypothesis: "SELL优先 / BOTH：自有服务器产品线加Supermicro平台，具备真实区域项目经验。",
+    },
+    {
+      company: "SURMET SpA", website: "https://www.surmet.cl/", country: "Chile", accountGrade: "A", keyAccount: true,
+      accountType: "SI", direction: "Two-way", products: "HPE, Dell, Lenovo servers, storage, data-center integration",
+      contactName: "Infrastructure / Datacenter Team", role: "HPE / Dell / Lenovo Server Integration", email: "contacto@surmet.cl", priority: "A2", score: 86,
+      nextAction: "围绕HPE/Dell/Lenovo server refresh或扩容问DDR5 RDIMM、enterprise storage和CPU急单；有项目再确认具体PN",
+      evidence: "服务器、存储与datacenter工程集成；官网称direct factory supply并支持HPE Gen12、PowerEdge与ThinkSystem。来源：https://www.surmet.cl/；https://www.surmet.cl/servidores",
+      hypothesis: "SELL优先 / BOTH：智利全国覆盖，主流OEM服务器与数据中心实施能力明确。",
+    },
+    {
+      company: "Data Sciences Corporation", website: "https://datasciences.co.za/", country: "South Africa", accountGrade: "B", keyAccount: false,
+      accountType: "HPC / AI Infrastructure", direction: "Two-way", products: "NVIDIA DGX, Supermicro, Lenovo, VAST, AI/HPC infrastructure",
+      contactName: "Adrian Wood", role: "Managing Director", email: "info@datasciences.co.za", priority: "B1", score: 84,
+      nextAction: "不泛推GPU；切64GB DDR5、server CPU和high-capacity storage的spot/hard-to-find供应能力，确认当前项目是否有gap",
+      evidence: "South Africa AI infrastructure integrator；Supermicro合作多年，NVIDIA DGX Preferred / Networking Elite。来源：https://datasciences.co.za/road-to-ai/；https://datasciences.co.za/enterprise-it-products/",
+      hypothesis: "SELL优先 / BOTH：真实AI/HPC采购能力强，但供应链较正规，需项目型切入。",
+    },
+  ];
   const AMD_EPYC_DIRECTORY = "https://www.amd.com/en/where-to-buy/processors/epyc/sys-integrators.html";
   const researchAccountSeed = [
     { company: "Abacus Electric", website: "https://www.abacus.cz/", country: "Czech Republic", accountGrade: "A", accountType: "Server Builder", focus: true, direction: "Buy-from", evidence: "官网明确生产 white-box 服务器与存储，并经营服务器部件、内存和 SSD；AMD EPYC 官方方案商。", hypothesis: "有服务器组装、现货与项目订单，最可能出现 BOM 变更、订单未交付或全新部件余量。" },
@@ -593,6 +685,9 @@
   }
   function gradePill(grade = "C") {
     return `<span class="grade grade-${escapeHtml(grade)}">${escapeHtml(grade)}级</span>`;
+  }
+  function keyAccountPill(keyAccount) {
+    return keyAccount ? `<span class="key-account-pill" title="重点客户">★ 重点</span>` : `<span class="key-account-empty">—</span>`;
   }
   function directionLabel(direction) {
     return ({ "Buy-from": "向对方采购", "Sell-to": "向对方销售", "Two-way": "双向账户" })[direction] || direction || "待判断";
@@ -911,8 +1006,76 @@
     return added;
   }
 
+  function mergeMemoryNicheBatch(payload) {
+    payload.appliedMigrations = payload.appliedMigrations || [];
+    if (payload.appliedMigrations.includes(MEMORY_NICHE_BATCH)) return 0;
+    const cleanUrl = (value = "") => String(value).toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
+    const cleanName = (value = "") => String(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+    const existingByUrl = new Map((payload.clients || []).filter((client) => client.website).map((client) => [cleanUrl(client.website), client]));
+    const existingByName = new Map((payload.clients || []).map((client) => [cleanName(client.company), client]));
+    const now = new Date().toISOString();
+    let added = 0;
+
+    memoryNicheSeed.forEach((item) => {
+      const existing = existingByUrl.get(cleanUrl(item.website)) || existingByName.get(cleanName(item.company));
+      const batchNote = `净新增小众市场 ${MEMORY_NICHE_BATCH}｜优先级 ${item.priority}｜尚未触达`;
+      if (existing) {
+        existing.keyAccount = Boolean(existing.keyAccount || item.keyAccount);
+        if (!existing.contactName && item.contactName) existing.contactName = item.contactName;
+        if (!existing.jobTitle && item.role) existing.jobTitle = item.role;
+        if (!existing.email && item.email) existing.email = item.email;
+        if (!existing.commercialHypothesis) existing.commercialHypothesis = item.hypothesis;
+        if (!existing.verifiedEvidence) existing.verifiedEvidence = item.evidence;
+        if (!existing.nextAction) existing.nextAction = item.nextAction;
+        if (!String(existing.notes || "").includes(MEMORY_NICHE_BATCH)) existing.notes = [existing.notes, batchNote].filter(Boolean).join("；");
+        existing.updatedAt = now;
+        return;
+      }
+
+      const client = {
+        id: uid(),
+        company: item.company,
+        website: item.website,
+        country: item.country,
+        businessRole: "双向合作",
+        products: item.products,
+        source: "2026-09-16 小众市场净新增名单｜官网及公开合作证据",
+        contactName: item.contactName || "",
+        jobTitle: item.role || "",
+        email: item.email || "",
+        whatsapp: "",
+        linkedin: "",
+        progressTags: [],
+        status: "已确认目标（待找联系人）",
+        trustScore: item.score,
+        followUpStage: "账户研究",
+        lastTouchAt: "",
+        nextFollowUpAt: "",
+        nextAction: item.nextAction,
+        notes: batchNote,
+        keyAccount: item.keyAccount,
+        accountGrade: item.accountGrade,
+        direction: item.direction,
+        accountType: item.accountType,
+        commercialHypothesis: item.hypothesis,
+        verifiedEvidence: `${item.evidence} 核验日：2026-09-16。公开资料不等于当前现货或正在采购。`,
+        owner: "Jenna",
+        researchBatch: MEMORY_NICHE_BATCH,
+        createdAt: now,
+        updatedAt: now,
+      };
+      payload.clients.push(client);
+      existingByUrl.set(cleanUrl(client.website), client);
+      existingByName.set(cleanName(client.company), client);
+      added += 1;
+    });
+
+    payload.appliedMigrations.push(MEMORY_NICHE_BATCH);
+    return added;
+  }
+
   function normalizeData(payload) {
-    payload.version = 5;
+    payload.version = 6;
     payload.clients = (payload.clients || []).map((c) => ({
       ...c,
       status: oldStatusMap[c.status] || c.status || "待筛选",
@@ -921,6 +1084,7 @@
       accountType: c.accountType || "Other",
       commercialHypothesis: c.commercialHypothesis || c.notes || "",
       verifiedEvidence: c.verifiedEvidence || "",
+      keyAccount: typeof c.keyAccount === "boolean" ? c.keyAccount : (c.accountGrade || (Number(c.trustScore || 0) >= 85 ? "A" : Number(c.trustScore || 0) >= 65 ? "B" : "C")) === "A",
       owner: "Jenna",
     }));
     payload.tasks = payload.tasks || [];
@@ -987,6 +1151,7 @@
       payload.appliedMigrations.push(ALL_CLIENTS_TOUCHED_MIGRATION);
     }
     mergeNicheCountryBatch(payload);
+    mergeMemoryNicheBatch(payload);
     return payload;
   }
 
@@ -1242,7 +1407,8 @@
       return text.includes(keyword)
         && (clientStatus === "全部" || c.status === clientStatus || (c.progressTags || []).includes(clientStatus))
         && (clientGrade === "全部" || c.accountGrade === clientGrade)
-        && (clientDirection === "全部" || c.direction === clientDirection);
+        && (clientDirection === "全部" || c.direction === clientDirection)
+        && (clientKeyAccount === "全部" || (clientKeyAccount === "重点客户" ? c.keyAccount : !c.keyAccount));
     });
     return `${top("账户库", "账户分级、沟通进展与下一步动作")}
       <div class="progress-legend" aria-label="客户颜色说明">
@@ -1251,15 +1417,16 @@
         <span><i class="legend-opportunity"></i>红色：报价 / 采购 / 销售机会</span>
       </div>
       <div class="toolbar"><input id="client-search" class="grow" value="${escapeHtml(clientSearch)}" placeholder="搜索公司、国家、产品、联系人或邮箱" />
+        <select id="client-key-account"><option ${clientKeyAccount === "全部" ? "selected" : ""}>全部</option><option ${clientKeyAccount === "重点客户" ? "selected" : ""}>重点客户</option><option ${clientKeyAccount === "非重点" ? "selected" : ""}>非重点</option></select>
         <select id="client-grade"><option>全部</option>${accountGrades.map((g) => `<option ${g === clientGrade ? "selected" : ""}>${g}</option>`).join("")}</select>
         <select id="client-direction"><option>全部</option>${directions.map((d) => `<option ${d === clientDirection ? "selected" : ""}>${d}</option>`).join("")}</select>
         <select id="client-status"><option>全部</option><optgroup label="触达与回复">${progressOptions.map((option) => `<option value="${option.value}" ${option.value === clientStatus ? "selected" : ""}>${option.label}</option>`).join("")}</optgroup><optgroup label="后续阶段">${["待筛选", "已确认目标（待找联系人）", "资料核验中", "价格评估中", "商务谈判中", "已成交", "培育", "已关闭"].map((s) => `<option ${s === clientStatus ? "selected" : ""}>${s}</option>`).join("")}</optgroup></select>
       </div>
-      <div class="table-wrap account-table"><table><thead><tr><th>账户</th><th>等级 / 类型</th><th>业务方向</th><th>联系人 / 渠道</th><th>具体机会阶段</th><th>最近沟通</th><th>下次跟进</th><th>下一步</th></tr></thead>
+      <div class="table-wrap account-table"><table><thead><tr><th>账户</th><th>重点客户</th><th>等级 / 类型</th><th>业务方向</th><th>联系人 / 渠道</th><th>具体机会阶段</th><th>最近沟通</th><th>下次跟进</th><th>下一步</th></tr></thead>
       <tbody>${rows.map((c) => {
         const latest = latestClientActivity(c.id);
         const activityCount = clientActivities(c.id).length;
-        return `<tr class="clickable account-progress-${accountProgressState(c)}" data-client="${c.id}"><td><div class="company-cell"><strong>${escapeHtml(c.company)}</strong><small>${escapeHtml(c.country || "待补充")} · ${escapeHtml(c.website)}</small></div></td><td>${gradePill(c.accountGrade)}<br><small>${escapeHtml(c.accountType)}</small></td><td><strong>${escapeHtml(directionLabel(c.direction))}</strong><br><small>${escapeHtml(c.products || "待补充")}</small></td><td><div class="contact-cell">${contactSummary(c)}</div></td><td>${progressPills(c)}</td><td>${activitySummary(latest, activityCount)}</td><td>${fmt(c.nextFollowUpAt)}</td><td class="next-action-cell">${escapeHtml(c.nextAction || "未设置")}</td></tr>`;
+        return `<tr class="clickable account-progress-${accountProgressState(c)}" data-client="${c.id}"><td><div class="company-cell"><strong>${escapeHtml(c.company)}</strong><small>${escapeHtml(c.country || "待补充")} · ${escapeHtml(c.website)}</small></div></td><td>${keyAccountPill(c.keyAccount)}</td><td>${gradePill(c.accountGrade)}<br><small>${escapeHtml(c.accountType)}</small></td><td><strong>${escapeHtml(directionLabel(c.direction))}</strong><br><small>${escapeHtml(c.products || "待补充")}</small></td><td><div class="contact-cell">${contactSummary(c)}</div></td><td>${progressPills(c)}</td><td>${activitySummary(latest, activityCount)}</td><td>${fmt(c.nextFollowUpAt)}</td><td class="next-action-cell">${escapeHtml(c.nextAction || "未设置")}</td></tr>`;
       }).join("")}</tbody></table>
       ${rows.length ? "" : `<div class="empty">没有符合条件的客户</div>`}</div>`;
   }
@@ -1268,7 +1435,7 @@
     return `${top("机会漏斗", "回复不等于机会：按证据推进阶段")}
       <section class="pipeline-board">${activeStages.map((stage) => {
         const items = data.clients.filter((c) => c.status === stage);
-        return `<div class="pipeline-column"><div class="column-title"><h2>${stage}</h2><b>${items.length}</b></div><div class="pipeline-list">${items.length ? items.map((c) => `<button class="pipeline-card" data-client="${c.id}"><div>${gradePill(c.accountGrade)}<small>${escapeHtml(c.accountType)}</small></div><strong>${escapeHtml(c.company)}</strong><p>${escapeHtml(directionLabel(c.direction))}</p><span>${escapeHtml(c.nextAction || "尚未设置下一步")}</span><time>${fmt(c.nextFollowUpAt)}</time></button>`).join("") : `<div class="empty compact">暂无</div>`}</div></div>`;
+        return `<div class="pipeline-column"><div class="column-title"><h2>${stage}</h2><b>${items.length}</b></div><div class="pipeline-list">${items.length ? items.map((c) => `<button class="pipeline-card" data-client="${c.id}"><div>${keyAccountPill(c.keyAccount)} ${gradePill(c.accountGrade)}<small>${escapeHtml(c.accountType)}</small></div><strong>${escapeHtml(c.company)}</strong><p>${escapeHtml(directionLabel(c.direction))}</p><span>${escapeHtml(c.nextAction || "尚未设置下一步")}</span><time>${fmt(c.nextFollowUpAt)}</time></button>`).join("") : `<div class="empty compact">暂无</div>`}</div></div>`;
       }).join("")}</section>`;
   }
   function renderTasks() {
@@ -1327,7 +1494,7 @@
     const quotes = data.quotes.filter((q) => q.clientId === c.id);
     const detail = (label, value, wide = false) => `<div class="detail-card ${wide ? "detail-wide" : ""}"><label>${label}</label><p>${value || "待补充"}</p></div>`;
     return `<div class="drawer-backdrop" id="drawer-backdrop"></div><aside class="drawer">
-      <div class="drawer-head"><div><p>${escapeHtml(c.country)} · ${escapeHtml(c.accountType)} · ${escapeHtml(directionLabel(c.direction))}</p><h2>${escapeHtml(c.company)}</h2><div class="drawer-badges">${gradePill(c.accountGrade)} ${progressPills(c)} ${trustPill(c.trustScore)}</div></div><button class="icon-button" id="close-drawer">×</button></div>
+      <div class="drawer-head"><div><p>${escapeHtml(c.country)} · ${escapeHtml(c.accountType)} · ${escapeHtml(directionLabel(c.direction))}</p><h2>${escapeHtml(c.company)}</h2><div class="drawer-badges">${keyAccountPill(c.keyAccount)} ${gradePill(c.accountGrade)} ${progressPills(c)} ${trustPill(c.trustScore)}</div></div><button class="icon-button" id="close-drawer">×</button></div>
       <div class="drawer-actions"><button class="primary" data-action="activity" data-client-id="${c.id}">＋ 记录沟通</button><button class="secondary" data-action="quote" data-client-id="${c.id}">＋ 添加库存/需求</button><button class="secondary" data-action="edit-client" data-client-id="${c.id}">编辑账户</button></div>
       <div class="detail-grid">
         ${detail("官网", c.website ? `<a href="${escapeHtml(c.website)}" target="_blank" rel="noopener">${escapeHtml(c.website)}</a>` : "")}
@@ -1360,6 +1527,7 @@
           <div class="field"><label>公司官网</label><input name="website" value="${val("website", quickDraft.website)}" placeholder="https://..." /></div>
           <div class="field"><label>国家 / 地区</label><input name="country" value="${val("country")}" /></div>
           <div class="field"><label>账户等级 *</label><select name="accountGrade">${accountGrades.map((g) => `<option ${selected(g, existing?.accountGrade || "B")}>${g}</option>`).join("")}</select></div>
+          <div class="field key-account-field"><label><input name="keyAccount" type="checkbox" ${existing?.keyAccount ? "checked" : ""} /> 重点客户</label><small>A1/A2或已进入真实机会的账户可标记；可随时手动修改。</small></div>
           <div class="field"><label>公司类型</label><select name="accountType">${accountTypes.map((t) => `<option ${selected(t, existing?.accountType || "SI")}>${t}</option>`).join("")}</select></div>
           <div class="field"><label>业务方向</label><select name="direction">${directions.map((d) => `<option ${selected(d, existing?.direction || "Buy-from")}>${d}</option>`).join("")}</select></div>
           <input type="hidden" name="status" value="${val("status", "已确认目标（待找联系人）")}" />
@@ -1451,6 +1619,7 @@
     document.getElementById("client-status")?.addEventListener("change", (event) => { clientStatus = event.target.value; render(); });
     document.getElementById("client-grade")?.addEventListener("change", (event) => { clientGrade = event.target.value; render(); });
     document.getElementById("client-direction")?.addEventListener("change", (event) => { clientDirection = event.target.value; render(); });
+    document.getElementById("client-key-account")?.addEventListener("change", (event) => { clientKeyAccount = event.target.value; render(); });
     document.querySelectorAll("[data-task]").forEach((button) => button.addEventListener("click", () => transact((draft) => {
       const task = draft.tasks.find((t) => t.id === Number(button.dataset.task));
       if (task) task.completed = !task.completed;
@@ -1490,11 +1659,11 @@
     if (f.whatsapp.trim() && !selectedTags.some((tag) => tag.startsWith("whatsapp_"))) selectedTags.push("whatsapp_pending");
     await transact((draft) => {
       const progressTags = uniqueProgressTags(selectedTags);
-      const values = { company: f.company.trim(), website: f.website.trim(), country: f.country.trim(), accountGrade: f.accountGrade, accountType: f.accountType, direction: f.direction, businessRole: f.direction === "Buy-from" ? "供应商" : f.direction === "Sell-to" ? "潜在买家" : "双向合作", products: f.products.trim(), source: f.source, contactName: f.contactName.trim(), jobTitle: f.jobTitle.trim(), email: f.email.trim(), whatsapp: f.whatsapp.trim(), linkedin: f.linkedin.trim(), progressTags, status: derivedStatus(progressTags, f.status || "已确认目标（待找联系人）"), trustScore: score, nextFollowUpAt: next, nextAction: f.nextAction.trim(), commercialHypothesis: f.commercialHypothesis.trim(), verifiedEvidence: f.verifiedEvidence.trim(), notes: f.notes.trim(), updatedAt: createdAt };
+      const values = { company: f.company.trim(), website: f.website.trim(), country: f.country.trim(), keyAccount: f.keyAccount === "on", accountGrade: f.accountGrade, accountType: f.accountType, direction: f.direction, businessRole: f.direction === "Buy-from" ? "供应商" : f.direction === "Sell-to" ? "潜在买家" : "双向合作", products: f.products.trim(), source: f.source, contactName: f.contactName.trim(), jobTitle: f.jobTitle.trim(), email: f.email.trim(), whatsapp: f.whatsapp.trim(), linkedin: f.linkedin.trim(), progressTags, status: derivedStatus(progressTags, f.status || "已确认目标（待找联系人）"), trustScore: score, nextFollowUpAt: next, nextAction: f.nextAction.trim(), commercialHypothesis: f.commercialHypothesis.trim(), verifiedEvidence: f.verifiedEvidence.trim(), notes: f.notes.trim(), updatedAt: createdAt };
       const existing = draft.clients.find((c) => c.id === existingId);
       if (existing) Object.assign(existing, values);
       else draft.clients.unshift({ id, ...values, followUpStage: "账户研究", lastTouchAt: "", createdAt });
-      if (!existing && next) draft.tasks.push({ id: uid(), clientId: id, title: f.nextAction.trim(), dueAt: next, priority: f.accountGrade === "A" ? "高" : "普通", stage: "账户研究", completed: false });
+      if (!existing && next) draft.tasks.push({ id: uid(), clientId: id, title: f.nextAction.trim(), dueAt: next, priority: f.keyAccount === "on" || f.accountGrade === "A" ? "高" : "普通", stage: "账户研究", completed: false });
     }, existingId ? "账户资料已更新" : "账户已保存，并创建下次跟进");
     modal = null; quickDraft = { company: "", website: "" }; render();
   }
