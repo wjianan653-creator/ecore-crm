@@ -55,6 +55,7 @@
   const OEM_CHANNEL_BATCH = "2026-08-31-oem-authorized-channel-19";
   const NICHE_COUNTRY_BATCH = "2026-09-02-niche-country-rdimm-9";
   const MEMORY_NICHE_BATCH = "2026-09-16-memory-niche-market-11-v2";
+  const MEDIUM_MEMORY_BATCH = "2026-09-17-medium-memory-accounts-25-v1";
   const oemChannelSeed = [
     {
         "company": "MEMPHIS Electronic",
@@ -588,6 +589,208 @@
       hypothesis: "SELL优先 / BOTH：真实AI/HPC采购能力强，但供应链较正规，需项目型切入。",
     },
   ];
+  const mediumMemorySeed = [
+    {
+      company: "Memorysolution GmbH", website: "https://www.memorysolution.de/", country: "Germany", accountGrade: "A", keyAccount: true,
+      accountType: "Distributor", direction: "Two-way", products: "Samsung / Micron / SK hynix enterprise RAM, SSD, server components, custom servers",
+      role: "Memory Product / Procurement / Datacenter Sales", email: "", priority: "A1", score: 94,
+      nextAction: "优先找Memory Product或采购负责人；先确认其64GB DDR5 5600/6400 RDIMM近期缺口及是否接收全新原厂项目余量，再进入具体PN",
+      evidence: "官网明确主营enterprise/datacenter RAM、SSD、server components与custom server solutions，并展示Samsung Authorized Distributor以及Micron、SK hynix合作标识。来源：https://www.memorysolution.de/",
+      hypothesis: "最强BOTH候选：同时具备正规品牌渠道、企业内存库存和服务器集成场景，可买可卖。",
+    },
+    {
+      company: "CompuRAM GmbH", website: "https://www.compuram.de/", country: "Germany", accountGrade: "A", keyAccount: true,
+      accountType: "Distributor", direction: "Two-way", products: "Server RAM, DDR5/DDR4 DIMM, Samsung/Kioxia server SSD",
+      role: "B2B / Reseller Sales / Purchasing", email: "", priority: "A1", score: 92,
+      nextAction: "从B2B与IT Reseller团队切入，确认Samsung/Micron/SK hynix原厂RDIMM采购与批量库存合作；先谈产品线和合作方式，不先堆PN",
+      evidence: "官网显示大型自有仓库、Server RAM、Samsung/Kioxia server SSD、B2B与IT reseller服务；约81%目录在库并已向55国发货。来源：https://www.compuram.de/",
+      hypothesis: "高质量内存渠道：自持库存和跨境交付能力明确，既可能采购原厂条，也可能提供可比较货源。",
+    },
+    {
+      company: "Wilk Elektronik S.A. (Goodram)", website: "https://www.goodram.com/", country: "Poland", accountGrade: "A", keyAccount: true,
+      accountType: "OEM / ODM", direction: "Two-way", products: "Server DRAM, DDR5/DDR4 memory modules, SSD, industrial memory",
+      role: "Server DRAM Product / Supply Chain / International Sales", email: "", priority: "A2", score: 88,
+      nextAction: "定位Server DRAM或供应链负责人，确认服务器内存颗粒/模组采购和区域分销需求；先用64GB DDR5趋势切入，再问具体项目",
+      evidence: "官网主体为Wilk Elektronik，产品导航包含Server DRAM、SSD与Industrial memory；公开资料显示其为欧洲内存模组制造商。来源：https://www.goodram.com/",
+      hypothesis: "中型欧洲内存制造商，可能采购Samsung/Micron/SK hynix颗粒或成品模组，也可能释放自有品牌供给。",
+    },
+    {
+      company: "PERSY", website: "https://persy.com/", country: "Bulgaria", accountGrade: "A", keyAccount: true,
+      accountType: "Server Builder", direction: "Two-way", products: "Rack/GPU/storage servers, SAN/NAS/JBOD, server components",
+      role: "Server Product / Procurement / System Integration", email: "", priority: "A1", score: 92,
+      nextAction: "找服务器产品或采购负责人，围绕64GB DDR5 5600/6400、18–30TB HDD和高容量enterprise SSD询问当前BOM缺口",
+      evidence: "官网明确为保加利亚服务器与存储制造商，覆盖rack、GPU、storage、blade、ARM、high-density服务器及SAN/NAS/JBOD。来源：https://persy.com/",
+      hypothesis: "真实服务器BOM客户，内存、SSD、HDD和CPU均与ECORE主营匹配，适合双向项目型合作。",
+    },
+    {
+      company: "ASAP Bulgaria", website: "https://www.asap.bg/", country: "Bulgaria", accountGrade: "A", keyAccount: true,
+      accountType: "SI", direction: "Sell-to", products: "Supermicro infrastructure, system integration, servers and storage",
+      role: "Infrastructure Solutions / Presales / Procurement", email: "", priority: "A2", score: 86,
+      nextAction: "从基础设施方案团队切入，确认Supermicro项目里的DDR5 RDIMM、enterprise SSD/HDD与server CPU急单或替换需求",
+      evidence: "官网确认系统集成与技术服务业务；公开合作资料显示其提供Supermicro端到端平台咨询、选型、交付与部署。来源：https://www.asap.bg/",
+      hypothesis: "中型项目型SI，需求通常由具体服务器配置触发；应围绕缺料和交期切入，不发泛库存介绍。",
+    },
+    {
+      company: "MOST Computers Ltd.", website: "https://www.mostcomputers.bg/", country: "Bulgaria", accountGrade: "B", keyAccount: false,
+      accountType: "Distributor", direction: "Two-way", products: "MOST branded PCs/servers, components, distribution",
+      role: "Server Product / Purchasing / Distribution", email: "", priority: "B1", score: 81,
+      nextAction: "先确认其MOST品牌服务器是否自行配置RDIMM和enterprise storage；若有自主BOM，再推进Samsung/Micron/SK hynix供应合作",
+      evidence: "官网与公开公司资料显示其从事MOST品牌电脑/服务器生产和IT产品分销。来源：https://www.mostcomputers.bg/",
+      hypothesis: "区域型制造+分销账户，规模适中；价值取决于服务器BOM是否由内部采购控制。",
+    },
+    {
+      company: "AGEM COMPUTERS spol. s r.o.", website: "https://www.agem.sk/", country: "Slovakia", accountGrade: "B", keyAccount: false,
+      accountType: "Distributor", direction: "Two-way", products: "IT distribution, QNAP/NAS, servers, storage and components",
+      role: "Server & Storage Product / Purchasing", email: "", priority: "B1", score: 83,
+      nextAction: "先确认server/storage产品经理是否处理企业内存和SSD/HDD采购；有明确产品线后再给64GB DDR5供需话题",
+      evidence: "官网为斯洛伐克IT分销电商；官方/企业资料显示其经营QNAP等存储与企业IT产品，公开规模约25–49人。来源：https://www.agem.sk/",
+      hypothesis: "中小型中欧分销商，回复链条可能比大型VAD短，但企业RDIMM直接采购量需验证。",
+    },
+    {
+      company: "ICO Innovative Computer GmbH", website: "https://www.ico.de/", country: "Germany", accountGrade: "A", keyAccount: true,
+      accountType: "Server Builder", direction: "Two-way", products: "AMD EPYC / Intel Xeon / Supermicro servers, AI servers, storage clusters",
+      role: "Server Product / Purchasing / Technical Sales", email: "", priority: "A1", score: 91,
+      nextAction: "找Server Product或采购，针对EPYC/Supermicro/AI server配置问64GB DDR5、enterprise SSD/HDD与CPU当前缺料",
+      evidence: "官网列出AMD EPYC、Intel Xeon、Supermicro、TYAN、MSI服务器，AI rack server及storage/HA cluster。来源：https://www.ico.de/",
+      hypothesis: "直接配置服务器与存储，硬件BOM清晰，是最接近真实RDIMM与enterprise storage采购的账户之一。",
+    },
+    {
+      company: "Yashi Italia S.r.l.", website: "https://www.yashiweb.com/", country: "Italy", accountGrade: "B", keyAccount: false,
+      accountType: "Server Builder", direction: "Sell-to", products: "Yashi branded servers, computers, workstations and systems",
+      role: "Server Product / Operations / Purchasing", email: "", priority: "B1", score: 82,
+      nextAction: "确认Yashi服务器的组装地点与内存/存储自主采购权；若内部控BOM，再切64GB DDR5与enterprise SSD",
+      evidence: "官网为意大利硬件品牌与制造商，产品类别明确包含Server、Computer与相关系统。来源：https://www.yashiweb.com/",
+      hypothesis: "区域自有品牌服务器厂商，潜在需求真实，但需要先确认服务器业务占比和采购实体。",
+    },
+    {
+      company: "Serviware", website: "https://www.serviware.com/", country: "France", accountGrade: "A", keyAccount: true,
+      accountType: "HPC / AI Infrastructure", direction: "Sell-to", products: "HPC, AI, compute servers, storage infrastructure",
+      role: "HPC Solutions / Procurement / Infrastructure Sales", email: "", priority: "A2", score: 87,
+      nextAction: "围绕HPC/AI项目扩容问DDR5 RDIMM、server CPU与15.36TB/61.44TB enterprise SSD的近期采购缺口",
+      evidence: "官网及公开公司资料将其定位为法国高性能计算、服务器与存储基础设施专家。来源：https://www.serviware.com/",
+      hypothesis: "法国中型HPC集成商，项目部件密度高；比大型OEM更适合用交期与稀缺料切入。",
+    },
+    {
+      company: "Paraflow Communications Ltd.", website: "https://www.paraflow.bg/", country: "Bulgaria", accountGrade: "B", keyAccount: false,
+      accountType: "SI", direction: "Sell-to", products: "Data-center infrastructure, servers, storage, virtualization and managed IT",
+      role: "Data Center Infrastructure / Presales / Procurement", email: "", priority: "B1", score: 82,
+      nextAction: "先确认数据中心项目是否自采服务器组件；若是，围绕升级/扩容中的DDR5、HDD和enterprise SSD需求推进",
+      evidence: "官网确认其30多年企业IT与系统集成经验，覆盖数据中心、云、基础设施和技术服务。来源：https://www.paraflow.bg/",
+      hypothesis: "成熟但非超大型的区域SI；主要机会来自项目补单、扩容和替换，而非日常现货交易。",
+    },
+    {
+      company: "Radore Veri Merkezi", website: "https://radore.com/", country: "Turkey", accountGrade: "A", keyAccount: true,
+      accountType: "Data Center", direction: "Sell-to", products: "Dedicated servers, cloud, colocation, backup and managed services",
+      role: "Infrastructure Operations / Capacity Planning / Procurement", email: "", priority: "A2", score: 87,
+      nextAction: "找基础设施运营或采购，聚焦dedicated server扩容与spares：64GB DDR5、18–30TB HDD和高容量SSD",
+      evidence: "官网明确提供dedicated server、cloud、colocation、backup、managed services和cloud datacenter solutions。来源：https://radore.com/",
+      hypothesis: "自营服务器与云资源形成持续硬件消耗；要从扩容/备件切入，不从GPU营销切入。",
+    },
+    {
+      company: "Netdirekt A.Ş.", website: "https://www.netdirekt.com.tr/", country: "Turkey", accountGrade: "A", keyAccount: true,
+      accountType: "Cloud / Hosting", direction: "Sell-to", products: "Dedicated servers, cloud, colocation, CDN and data-center services",
+      role: "Data Center Operations / Hardware Procurement", email: "", priority: "A2", score: 86,
+      nextAction: "从dedicated server和数据中心运营切入，确认DDR5 RDIMM、HDD与SSD的季度扩容或故障备件需求",
+      evidence: "官网主营hosting、CDN、cloud、dedicated server与data-center服务，并公开其土耳其本地基础设施能力。来源：https://www.netdirekt.com.tr/",
+      hypothesis: "区域中型托管商，服务器数量与硬件刷新频率值得开发，采购决策可能较本地化。",
+    },
+    {
+      company: "conova communications GmbH", website: "https://www.conova.com/", country: "Austria", accountGrade: "A", keyAccount: true,
+      accountType: "Cloud / Hosting", direction: "Sell-to", products: "Private/public cloud, data centers, on-prem infrastructure, AI platform",
+      role: "Infrastructure / Datacenter Operations / Procurement", email: "", priority: "A2", score: 87,
+      nextAction: "围绕自营数据中心和private cloud扩容，问64GB DDR5、enterprise HDD/SSD及server CPU的标准化采购窗口",
+      evidence: "官网确认其运营数据中心并提供private/public cloud、on-prem infrastructure、managed services与AI平台。来源：https://www.conova.com/",
+      hypothesis: "奥地利区域云与数据中心运营商，硬件需求真实，适合建立长期扩容和备件供给关系。",
+    },
+    {
+      company: "Ikoula", website: "https://www.ikoula.com/", country: "France", accountGrade: "B", keyAccount: false,
+      accountType: "Cloud / Hosting", direction: "Sell-to", products: "Dedicated servers, cloud hosting, managed infrastructure and storage",
+      role: "Infrastructure Operations / Purchasing / Product", email: "", priority: "B1", score: 83,
+      nextAction: "先核验当前硬件采购是否仍由法国团队控制；若是，再问dedicated server更新中的DDR5、HDD和SSD需求",
+      evidence: "官网确认其自1998年开展法国hosting与managed infrastructure业务，覆盖服务器、云与存储服务。来源：https://www.ikoula.com/",
+      hypothesis: "成熟托管品牌，但集团归属可能使采购更集中；先确认采购权，再决定投入深度。",
+    },
+    {
+      company: "NovoServe", website: "https://novoserve.com/", country: "Netherlands", accountGrade: "A", keyAccount: true,
+      accountType: "Cloud / Hosting", direction: "Sell-to", products: "7,000+ dedicated servers, AMD EPYC/Intel Xeon, AI/HPC and storage servers",
+      role: "Hardware Procurement / Datacenter Operations / Product", email: "", priority: "A1", score: 92,
+      nextAction: "直接找硬件采购或DC Ops，围绕7000+服务器fleet的DDR5、18–30TB HDD、高容量SSD和EPYC spares建立供应入口",
+      evidence: "官网称运营7,000+ dedicated servers，使用AMD EPYC与Intel Xeon，覆盖AI GPU、HPC和high-storage servers。来源：https://novoserve.com/",
+      hypothesis: "最强Sell-to候选之一：自营大规模服务器fleet但公司仍属中型，硬件消耗和替换频率高。",
+    },
+    {
+      company: "Worldstream B.V.", website: "https://www.worldstream.com/", country: "Netherlands", accountGrade: "A", keyAccount: true,
+      accountType: "Cloud / Hosting", direction: "Sell-to", products: "Dedicated AMD/AI servers, customized servers, cloud and colocation",
+      role: "Hardware Procurement / Server Product / Datacenter Operations", email: "", priority: "A1", score: 90,
+      nextAction: "针对customized/AMD/AI server产品线找硬件采购，问DDR5 RDIMM、HDD和enterprise SSD的扩容与备件窗口",
+      evidence: "官网列出dedicated servers、customized servers、AI servers、AMD servers、cloud和colocation。来源：https://www.worldstream.com/",
+      hypothesis: "自营并定制服务器，零部件采购与ECORE高度匹配；应以交期、批量和可追溯新货为卖点。",
+    },
+    {
+      company: "MasterDC", website: "https://www.master.cz/", country: "Czech Republic", accountGrade: "A", keyAccount: true,
+      accountType: "Cloud / Hosting", direction: "Sell-to", products: "Dedicated/managed/cloud servers, server housing and enterprise infrastructure",
+      role: "Infrastructure Operations / Hardware Procurement", email: "", priority: "A2", score: 86,
+      nextAction: "从dedicated和managed server扩容切入，确认64GB DDR5、enterprise SSD/HDD及备件的采购周期与兼容要求",
+      evidence: "官网明确提供cloud server、dedicated server、managed server、server housing与企业IT基础设施。来源：https://www.master.cz/",
+      hypothesis: "中欧本地基础设施运营商，服务器硬件需求真实，且与现有捷克服务器渠道可形成交叉验证。",
+    },
+    {
+      company: "Lancom Ltd.", website: "https://lancom.gr/", country: "Greece", accountGrade: "A", keyAccount: true,
+      accountType: "Data Center", direction: "Sell-to", products: "Three data centers, cloud servers, private cloud, storage and telecom",
+      role: "Data Center Operations / Cloud Infrastructure / Procurement", email: "", priority: "A2", score: 88,
+      nextAction: "找DC Ops或采购，围绕三座数据中心的cloud server、private cloud和storage扩容问RDIMM、HDD及SSD需求",
+      evidence: "官网称为希腊本土公司，拥有并运营雅典和塞萨洛尼基三座企业数据中心，提供cloud servers、private cloud与storage。来源：https://lancom.gr/",
+      hypothesis: "区域规模适中且基础设施自营，采购场景明确；适合做持续性容量与备件供应。",
+    },
+    {
+      company: "Silicon Sky", website: "https://www.siliconsky.com/", country: "South Africa", accountGrade: "B", keyAccount: false,
+      accountType: "Cloud / Hosting", direction: "Sell-to", products: "IaaS, high-performance cloud compute, storage, backup and colocation",
+      role: "Cloud Infrastructure / Operations / Procurement", email: "", priority: "B1", score: 83,
+      nextAction: "先确认云基础设施硬件是否自持以及采购地点；若本地采购，再切服务器内存、storage和spares",
+      evidence: "官网明确提供IaaS、高性能cloud compute、cloud storage、backup及premium data-center colocation。来源：https://www.siliconsky.com/",
+      hypothesis: "南非中型云基础设施公司，可能有本地硬件需求，但是否自行采购需要优先验证。",
+    },
+    {
+      company: "Stackscale B.V.", website: "https://www.stackscale.com/", country: "Spain / Netherlands", accountGrade: "A", keyAccount: true,
+      accountType: "Cloud / Hosting", direction: "Sell-to", products: "AMD/Intel bare metal, GPU servers, private cloud, network storage and cold spares",
+      role: "Infrastructure Engineering / Hardware Procurement / Capacity", email: "", priority: "A1", score: 91,
+      nextAction: "从bare-metal与cold-spare产品线切入，问DDR5 RDIMM、enterprise SSD/HDD和EPYC CPU的标准BOM与补货周期",
+      evidence: "官网列出AMD/Intel bare-metal、GPU servers、private cloud、network storage、colocation及cold spare。来源：https://www.stackscale.com/",
+      hypothesis: "直接运营bare metal并公开cold-spare场景，意味着新备件和替换料需求明确，是高优先级客户。",
+    },
+    {
+      company: "IP ServerOne Solutions Sdn. Bhd.", website: "https://www.ipserverone.com/", country: "Malaysia", accountGrade: "A", keyAccount: true,
+      accountType: "Cloud / Hosting", direction: "Sell-to", products: "Tier III data center, bare metal, private cloud, GPUaaS, object storage",
+      role: "Data Center / Bare Metal Product / Hardware Procurement", email: "cs@ipserverone.com", priority: "A1", score: 91,
+      nextAction: "找bare metal或DC硬件采购，结合其GPUaaS与多区域云问64GB DDR5、HDD和高容量enterprise SSD的扩容需求",
+      evidence: "官网明确Tier III data center、bare metal、private cloud、GPUaaS、object storage，并在马来西亚/新加坡/香港提供基础设施服务。来源：https://www.ipserverone.com/",
+      hypothesis: "东南亚中型基础设施运营商，自营硬件与区域覆盖兼具，适合作为非美英重点客户。",
+    },
+    {
+      company: "Micron21 Data Centre", website: "https://www.micron21.com/", country: "Australia", accountGrade: "A", keyAccount: true,
+      accountType: "Data Center", direction: "Sell-to", products: "Cloud/dedicated servers, GPU servers, storage servers, colocation",
+      role: "Data Centre Operations / Hardware Procurement / Cloud Product", email: "", priority: "A2", score: 88,
+      nextAction: "围绕H100/H200/RTX PRO 6000、storage dedicated servers和cloud fleet问DDR5 RDIMM、HDD及大容量SSD需求；不主推GPU",
+      evidence: "官网列出cloud servers、GPU cloud、compute/storage/GPU dedicated servers与data-centre colocation。来源：https://www.micron21.com/",
+      hypothesis: "澳大利亚中型自营数据中心，既有GPU也有storage server，核心切入应放在内存和存储扩容。",
+    },
+    {
+      company: "Servers Australia", website: "https://www.serversaustralia.com.au/", country: "Australia", accountGrade: "A", keyAccount: true,
+      accountType: "Cloud / Hosting", direction: "Sell-to", products: "Dedicated servers, private cloud, virtualisation, storage and managed infrastructure",
+      role: "Hardware Procurement / Infrastructure Operations / Product", email: "", priority: "A2", score: 87,
+      nextAction: "找硬件采购或产品团队，确认dedicated/private cloud平台的DDR5、enterprise SSD/HDD与CPU刷新计划",
+      evidence: "官网明确提供dedicated servers、virtualisation、private cloud、cloud hosting与managed infrastructure。来源：https://www.serversaustralia.com.au/",
+      hypothesis: "区域中型hosting与服务器运营商，长期扩容和备件采购比单次GPU询价更适合ECORE。",
+    },
+    {
+      company: "DataPacket", website: "https://www.datapacket.com/", country: "Czech Republic", accountGrade: "A", keyAccount: true,
+      accountType: "Cloud / Hosting", direction: "Sell-to", products: "High-performance dedicated servers, AMD EPYC, high-bandwidth infrastructure",
+      role: "Server Operations / Hardware Procurement / Capacity Planning", email: "", priority: "A2", score: 88,
+      nextAction: "从high-performance dedicated fleet切入，问DDR5 RDIMM、18–30TB HDD、enterprise SSD和EPYC CPU的扩容与替换计划",
+      evidence: "官网主营全球高性能dedicated server基础设施，并公开AMD EPYC等服务器配置与多区域部署。来源：https://www.datapacket.com/",
+      hypothesis: "服务器运营规模足以形成持续用量，但仍可通过中型团队找到直接基础设施负责人。",
+    },
+  ];
   const AMD_EPYC_DIRECTORY = "https://www.amd.com/en/where-to-buy/processors/epyc/sys-integrators.html";
   const researchAccountSeed = [
     { company: "Abacus Electric", website: "https://www.abacus.cz/", country: "Czech Republic", accountGrade: "A", accountType: "Server Builder", focus: true, direction: "Buy-from", evidence: "官网明确生产 white-box 服务器与存储，并经营服务器部件、内存和 SSD；AMD EPYC 官方方案商。", hypothesis: "有服务器组装、现货与项目订单，最可能出现 BOM 变更、订单未交付或全新部件余量。" },
@@ -1074,8 +1277,75 @@
     return added;
   }
 
+  function mergeMediumMemoryBatch(payload) {
+    payload.appliedMigrations = payload.appliedMigrations || [];
+    if (payload.appliedMigrations.includes(MEDIUM_MEMORY_BATCH)) return 0;
+    const cleanUrl = (value = "") => String(value).toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
+    const cleanName = (value = "") => String(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+    const existingByUrl = new Map((payload.clients || []).filter((client) => client.website).map((client) => [cleanUrl(client.website), client]));
+    const existingByName = new Map((payload.clients || []).map((client) => [cleanName(client.company), client]));
+    const now = new Date().toISOString();
+    let added = 0;
+
+    mediumMemorySeed.forEach((item) => {
+      const existing = existingByUrl.get(cleanUrl(item.website)) || existingByName.get(cleanName(item.company));
+      const batchNote = `中型内存/服务器客户批次 ${MEDIUM_MEMORY_BATCH}｜优先级 ${item.priority}｜尚未触达`;
+      if (existing) {
+        existing.keyAccount = Boolean(existing.keyAccount || item.keyAccount);
+        if (!existing.jobTitle && item.role) existing.jobTitle = item.role;
+        if (!existing.email && item.email) existing.email = item.email;
+        if (!existing.commercialHypothesis) existing.commercialHypothesis = item.hypothesis;
+        if (!existing.verifiedEvidence) existing.verifiedEvidence = item.evidence;
+        if (!existing.nextAction) existing.nextAction = item.nextAction;
+        if (!String(existing.notes || "").includes(MEDIUM_MEMORY_BATCH)) existing.notes = [existing.notes, batchNote].filter(Boolean).join("；");
+        existing.updatedAt = now;
+        return;
+      }
+
+      const client = {
+        id: uid(),
+        company: item.company,
+        website: item.website,
+        country: item.country,
+        businessRole: item.direction === "Sell-to" ? "潜在买家" : "双向合作",
+        products: item.products,
+        source: "2026-09-17 中型内存/服务器账户研究｜公司官网及公开合作证据",
+        contactName: "",
+        jobTitle: item.role || "",
+        email: item.email || "",
+        whatsapp: "",
+        linkedin: "",
+        progressTags: [],
+        status: "已确认目标（待找联系人）",
+        trustScore: item.score,
+        followUpStage: "账户研究",
+        lastTouchAt: "",
+        nextFollowUpAt: "",
+        nextAction: item.nextAction,
+        notes: `${batchNote}｜首轮先验证业务与采购场景，不把官网产品能力当成现货或正在采购。`,
+        keyAccount: item.keyAccount,
+        accountGrade: item.accountGrade,
+        direction: item.direction,
+        accountType: item.accountType,
+        commercialHypothesis: item.hypothesis,
+        verifiedEvidence: `${item.evidence} 核验日：2026-09-17。公开资料仅证明业务相关性，不证明当前需求、库存或货权。`,
+        owner: "Jenna",
+        researchBatch: MEDIUM_MEMORY_BATCH,
+        createdAt: now,
+        updatedAt: now,
+      };
+      payload.clients.push(client);
+      existingByUrl.set(cleanUrl(client.website), client);
+      existingByName.set(cleanName(client.company), client);
+      added += 1;
+    });
+
+    payload.appliedMigrations.push(MEDIUM_MEMORY_BATCH);
+    return added;
+  }
+
   function normalizeData(payload) {
-    payload.version = 7;
+    payload.version = 8;
     payload.clients = (payload.clients || []).map((c) => ({
       ...c,
       status: oldStatusMap[c.status] || c.status || "待筛选",
@@ -1153,6 +1423,7 @@
     }
     mergeNicheCountryBatch(payload);
     mergeMemoryNicheBatch(payload);
+    mergeMediumMemoryBatch(payload);
     return payload;
   }
 
